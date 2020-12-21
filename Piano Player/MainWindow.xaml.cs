@@ -43,21 +43,19 @@ namespace Piano_Player
             PianoPlayer.Player_Stop();
         }
 
-        public void UpdateUI()
+        private void btn_reset_Click(object sender, RoutedEventArgs e)
         {
-            if (PianoPlayer == null) return;
+            PianoPlayer.Player_Stop();
 
-            if (Application.Current != null)
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                bool playing = PianoPlayer.IsPlaying;
-                if (!playing)
-                    img_btn_playpause.Source = new BitmapImage(new Uri(@"pack://application:,,,/Images/btn_play.png"));
-                else
-                    img_btn_playpause.Source = new BitmapImage(new Uri(@"pack://application:,,,/Images/btn_pause.png"));
+            edit_timePerNote.Text = "150";
+            edit_timePerSpace.Text = "150";
+            edit_timePerBreak.Text = "400";
+            edit_sheets.Text = "";
 
-                progress_bar.Value = PianoPlayer.PlayerProgress;
-            });
+            PianoPlayer.NoteTime = 150;
+            PianoPlayer.SpaceTime = 150;
+            PianoPlayer.BreakTime = 400;
+            PianoPlayer.CurrentSheet = new Player.PianoSheet("");
         }
 
         private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
@@ -91,6 +89,11 @@ namespace Piano_Player
 
             try { PianoPlayer.NoteTime = int.Parse(edit_timePerNote.Text); }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.NoteTime."); }
+            if (PianoPlayer.NoteTime < 10)
+            {
+                PianoPlayer.NoteTime = 10;
+                edit_timePerNote.Text = "10";
+            }
         }
 
         private void edit_timePerSpace_TextChanged(object sender, TextChangedEventArgs e)
@@ -103,6 +106,11 @@ namespace Piano_Player
 
             try { PianoPlayer.SpaceTime = int.Parse(edit_timePerSpace.Text); }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.SpaceTime."); }
+            if (PianoPlayer.SpaceTime < 10)
+            {
+                PianoPlayer.SpaceTime = 10;
+                edit_timePerSpace.Text = "10";
+            }
         }
 
         private void edit_timePerBreak_TextChanged(object sender, TextChangedEventArgs e)
@@ -115,19 +123,28 @@ namespace Piano_Player
 
             try { PianoPlayer.BreakTime = int.Parse(edit_timePerBreak.Text); }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.BreakTime."); }
+            if (PianoPlayer.BreakTime < 10)
+            {
+                PianoPlayer.BreakTime = 10;
+                edit_timePerBreak.Text = "10";
+            }
         }
 
-        private void btn_reset_Click(object sender, RoutedEventArgs e)
+        public void UpdateUI()
         {
-            edit_timePerNote.Text = "150";
-            edit_timePerSpace.Text = "150";
-            edit_timePerBreak.Text = "400";
-            edit_sheets.Text = "";
+            if (PianoPlayer == null) return;
 
-            PianoPlayer.NoteTime = 150;
-            PianoPlayer.SpaceTime = 150;
-            PianoPlayer.BreakTime = 400;
-            PianoPlayer.CurrentSheet = new Player.PianoSheet("");
+            if (Application.Current != null)
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                bool playing = PianoPlayer.IsPlaying;
+                if (!playing)
+                    img_btn_playpause.Source = new BitmapImage(new Uri(@"pack://application:,,,/Images/btn_play.png"));
+                else
+                    img_btn_playpause.Source = new BitmapImage(new Uri(@"pack://application:,,,/Images/btn_pause.png"));
+
+                progress_bar.Value = PianoPlayer.PlayerProgress;
+            });
         }
     }
 }

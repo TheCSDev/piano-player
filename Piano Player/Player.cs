@@ -21,11 +21,11 @@ namespace Piano_Player
         public readonly Player ThisPlayer;
         //when set to false, the new threaad stops, and the player becomes useless
         //the owner window modifies this variable
-        public bool PlayerAlive = true;
+        public bool PlayerAlive { get; set; } = true;
         //the owner window modifies this variable
         public bool IsMainWindowKeyboardFocused = true;
 
-        public PlayerInputHandler inputSimulator { get; private set; }
+        public PlayerInputHandler inputHandler { get; private set; }
 
         public int PlayerProgress { get; private set; } = 0;
         public delegate void PlayerProgressChangedHandler();
@@ -35,12 +35,12 @@ namespace Piano_Player
         {
             this.parentWindow = parentWindow;
             ThisPlayer = this;
-            inputSimulator = new PlayerInputHandler(this);
+            PlayerAlive = true;
+            inputHandler = new PlayerInputHandler(this);
 
             Thread player_thread = new Thread(() =>
             {
                 while (Application.Current == null) { Thread.Sleep(100); }
-
                 while (PlayerAlive)
                 {
                     //Check if the main window is in focus, and if it is,
@@ -65,19 +65,19 @@ namespace Piano_Player
                             {
                                 if (SpecialCharKeys.Contains("" + ch))
                                 {
-                                    inputSimulator.KeyDown(VirtualKeyCode.LSHIFT);
-                                    inputSimulator.KeyPress((VirtualKeyCode)SpecialCharKeysShift[SpecialCharKeys.IndexOf("" + ch)]);
-                                    inputSimulator.KeyUp(VirtualKeyCode.LSHIFT);
+                                    inputHandler.KeyDown(VirtualKeyCode.LSHIFT);
+                                    inputHandler.KeyPress((VirtualKeyCode)SpecialCharKeysShift[SpecialCharKeys.IndexOf("" + ch)]);
+                                    inputHandler.KeyUp(VirtualKeyCode.LSHIFT);
                                 }
                                 else
                                 {
                                     if (char.IsUpper(ch))
-                                        inputSimulator.KeyDown(VirtualKeyCode.LSHIFT);
+                                        inputHandler.KeyDown(VirtualKeyCode.LSHIFT);
 
-                                    inputSimulator.KeyPress((VirtualKeyCode)char.ToUpper(ch));
+                                    inputHandler.KeyPress((VirtualKeyCode)char.ToUpper(ch));
 
                                     if (char.IsUpper(ch))
-                                        inputSimulator.KeyUp(WindowsInput.Native.VirtualKeyCode.LSHIFT);
+                                        inputHandler.KeyUp(WindowsInput.Native.VirtualKeyCode.LSHIFT);
                                 }
                             }
 
@@ -220,21 +220,23 @@ namespace Piano_Player
         // =======================================================
         public void Player_Play()
         {
-            inputSimulator.RefreshData();
-            inputSimulator.DebugPlayerHelper();
+            inputHandler.RefreshData();
+            inputHandler.DebugPlayerHelper();
             IsPlaying = true;
             PlayStateChanged();
         }
-        public void Player_Pause() { IsPlaying = false; PlayStateChanged(); }
-        public void Player_Toggle()
+        public void Player_Pause()
         {
-            inputSimulator.RefreshData();
-            if (!IsPlaying) Player_Play(); else Player_Pause();
+            if(inputHandler.javaHelperProcess != null && !inputHandler.javaHelperProcess.HasExited)
+                inputHandler.javaHelperProcess.Kill();
+            IsPlaying = false;
+            PlayStateChanged();
         }
+        public void Player_Toggle() { if (!IsPlaying) Player_Play(); else Player_Pause(); }
         public void Player_Stop()
         {
             //first update the variables
-            IsPlaying = false;
+            Player_Pause();
             PlayerProgress = 0;
             //then reset
             CurrentSheet.Reset();

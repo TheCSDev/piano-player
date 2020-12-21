@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
+using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 
@@ -17,85 +18,82 @@ namespace Piano_Player
         public InputSimulator inputSimulator { get; private set; }
         public bool isJavaInstalled { get; private set; }
         public bool canUseJavaHelper { get; private set; }
+
+        //Java helper variables
+        public Process javaHelperProcess { get; private set; }
         // ================================================
         public PlayerInputHandler(Player parentPlayer)
         {
             this.parentPlayer = parentPlayer;
             inputSimulator = new InputSimulator();
             RefreshData();
+
+            if (!isJavaInstalled)
+            {
+                MessageBox.Show("Please note that most applications block automated " +
+                    "input, which is why this application may not work on some " +
+                    "applications. To work around this and make automated input " +
+                    "be accepted by more applications, I have implemented a Java " +
+                    "(jar) file that acts as a helper to automating input. If you " +
+                    "wish the application to use this Java helper, please install " +
+                    "the latest version of Java on your device. If you choose not " +
+                    "to install Java, this application will still run as normal, but " +
+                    "it's automated input will work on less applications.", "Piano Player");
+            }
+
+            //this thread will make sure to deal with the server stuff
+            //should the Java helper be used
+            Thread t = new Thread(() =>
+            {
+                while (true)
+                {
+                    Thread.Sleep(1500);
+                    if (javaHelperProcess != null && !javaHelperProcess.HasExited)
+                        SendCommandToHelper("ping");
+                }
+            });
+            t.IsBackground = true;
+            t.Start();
         }
-        // ================================================
-        public void KeyPress(VirtualKeyCode keyCode)
-        {
-            if (!canUseJavaHelper)
-                inputSimulator.Keyboard.KeyPress(keyCode);
-            else ExecHelper("key-press " + (int)keyCode);
-        }
-        public void KeyDown(VirtualKeyCode keyCode)
-        {
-            if (!canUseJavaHelper)
-                inputSimulator.Keyboard.KeyDown(keyCode);
-            else ExecHelper("key-down " + (int)keyCode);
-        }
-        public void KeyUp(VirtualKeyCode keyCode)
-        {
-            if (!canUseJavaHelper)
-                inputSimulator.Keyboard.KeyUp(keyCode);
-            else ExecHelper("key-up " + (int)keyCode);
-        }
-        // ================================================
+        //
         public void RefreshData()
         {
             isJavaInstalled = App.Where("java.exe") != null;
             canUseJavaHelper = isJavaInstalled && File.Exists(JavaHelperPath);
         }
-        private void ExecHelper(string args)
+        // ================================================
+        public void KeyPress(VirtualKeyCode keyCode)
         {
-            if (!canUseJavaHelper) return;
+            if (!canUseJavaHelper) inputSimulator.Keyboard.KeyPress(keyCode);
+            else SendCommandToHelper("key-press " + (int)keyCode);
+        }
+        public void KeyDown(VirtualKeyCode keyCode)
+        {
+            if (!canUseJavaHelper) inputSimulator.Keyboard.KeyDown(keyCode);
+            else SendCommandToHelper("key-down " + (int)keyCode);
+        }
+        public void KeyUp(VirtualKeyCode keyCode)
+        {
+            if (!canUseJavaHelper) inputSimulator.Keyboard.KeyUp(keyCode);
+            else SendCommandToHelper("key-up " + (int)keyCode);
+        }
+        // ================================================
+        public void SendCommandToHelper(string args)
+        {
+            //return if helper cannot be used
+            if (!canUseJavaHelper || javaHelperProcess == null) return;
+            if (javaHelperProcess.HasExited && !parentPlayer.IsPlaying) return;
 
-            Thread th_output_reader = new Thread(() =>
+            //catch and handle an error should it ever occur
+            if (javaHelperProcess.HasExited && parentPlayer.IsPlaying)
             {
-                Process proc = new Process();
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.FileName = "javaw";
-                proc.StartInfo.Arguments = "-jar \"" + JavaHelperPath + "\" \"" + args + "\"";
-                proc.StartInfo.RedirectStandardOutput = true;
+                parentPlayer.Player_Pause();
+                MessageBox.Show("The PianoPlayerHelper.jar Process " +
+                    "has unexpectedly crashed.\n\n" +
+                    GetProcessLogOuput(javaHelperProcess), "Piano Player");
+            }
 
-                //this security thread will be used to prevent the processes
-                //from running for longer than a second or so. this is here to prevent
-                //processes from running into errors and spamming error pop-ups
-                Thread security = new Thread(() =>
-                {
-                    bool started = false;
-                    while (!started) //first wait for the process to start
-                    {
-                        Thread.Sleep(50);
-                        try { Process.GetProcessById(proc.Id); started = true; }
-                        catch (Exception) { }
-                    }
-                    Thread.Sleep(2000); //then wait 2 seconds
-                    try
-                    {
-                        Process.GetProcessById(proc.Id);//check if process still running
-
-                        parentPlayer.Player_Pause(); //prevent further processes
-                        proc.Kill(); //kill the process
-                    }
-                    catch (Exception)
-                    {
-                        //if finished, log the output
-                        proc.WaitForExit(); //just in case
-                        while (!proc.StandardOutput.EndOfStream)
-                            Console.WriteLine("> " + proc.StandardOutput.ReadLine());
-                    }
-                });
-                security.IsBackground = false;
-                security.Start();
-
-                proc.Start();
-            });
-            th_output_reader.IsBackground = false;
-            th_output_reader.Start();
+            javaHelperProcess.StandardInput.WriteLine("/" + args);
         }
 
         /// <summary>
@@ -111,8 +109,10 @@ namespace Piano_Player
         /// </summary>
         public void DebugPlayerHelper()
         {
+            //if the Java helper cannot be used, ignre this method
             if (!canUseJavaHelper) return;
 
+            //first off, execute the jar file to test it and make sure it works
             Process proc = new Process();
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.FileName = "javaw";
@@ -120,42 +120,70 @@ namespace Piano_Player
             proc.StartInfo.RedirectStandardOutput = true;
             proc.StartInfo.RedirectStandardError = true;
             proc.Start();
-
             proc.WaitForExit();
 
+            //now get the exit code, and if it's not 0, something went wrong
+            //in which case an error window will show up and Java will most
+            //likely need to be reconfigured
             if (proc.ExitCode != 0)
             {
-                string output = "There was an error while trying to use the " +
-                    "PianoPlayerHelper (Java).\nMake sure your Java is up to date " +
-                    "and that there are no other issues with Java.\n" +
-                    "The PianoPlayerHelper has exited with code " +
-                    proc.ExitCode + ".";
-
-                string s_out = "", e_out = "";
-                while (!proc.StandardOutput.EndOfStream) { s_out += "\n" + proc.StandardOutput.ReadLine(); }
-                while (!proc.StandardError.EndOfStream) { e_out += "\n" + proc.StandardError.ReadLine(); }
-
-                if (s_out.Length > 0)
-                {
-                    if(s_out.StartsWith("\n")) s_out = s_out.Substring(1);
-                    output += "\n\nPianoPlayerHelper standard output:\n\n" + s_out;
-                }
-                if (e_out.Length > 0)
-                {
-                    if (e_out.StartsWith("\n")) e_out = e_out.Substring(1);
-                    output += "\n\nPianoPlayerHelper error output:\n\n" + e_out;
-                }
-
                 //show the error window
-                ErrorWindow errorWindow = new ErrorWindow();
-                errorWindow.edit_text.Text = output;
-                errorWindow.Show();
+                ShowHelperErrorWindow("There was an error while trying to use the " +
+                    "PianoPlayerHelper (Java).\nMake sure your Java is up to date " +
+                    "and that there are no other issues with Java.", proc);
 
                 //close the player window
                 parentPlayer.parentWindow.Close();
                 //kill the player thread
                 parentPlayer.PlayerAlive = false;
             }
+
+            //if everything is alright, start the helper (kill the previous one first)
+            if (javaHelperProcess != null && !javaHelperProcess.HasExited) javaHelperProcess.Kill();
+
+            javaHelperProcess = new Process();
+            javaHelperProcess.StartInfo.UseShellExecute = false;
+            javaHelperProcess.StartInfo.FileName = "javaw";
+            javaHelperProcess.StartInfo.Arguments = "-jar \"" + JavaHelperPath + "\" \"" + "start-helper" + "\"";
+            javaHelperProcess.StartInfo.RedirectStandardInput = true;
+            javaHelperProcess.StartInfo.RedirectStandardOutput = true;
+            javaHelperProcess.StartInfo.RedirectStandardError = true;
+            javaHelperProcess.Start();
+        }
+
+        public void ShowHelperErrorWindow(string message, Process proc)
+        {
+            if (proc == null) return;
+            try { proc.Kill(); } catch (Exception) { }
+
+            message += "\n\n" + GetProcessLogOuput(proc);
+            message += "\n\n" + "The Process has exited with code " + proc.ExitCode + ".";
+
+            //show the error window
+            ErrorWindow errorWindow = new ErrorWindow();
+            errorWindow.edit_text.Text = message;
+            errorWindow.Show();
+        }
+        public static String GetProcessLogOuput(Process proc)
+        {
+            string message = "";
+            string s_out = "", e_out = "";
+            if (proc.StartInfo.RedirectStandardOutput)
+                while (!proc.StandardOutput.EndOfStream) { s_out += "\n" + proc.StandardOutput.ReadLine(); }
+            if (proc.StartInfo.RedirectStandardError)
+                while (!proc.StandardError.EndOfStream) { e_out += "\n" + proc.StandardError.ReadLine(); }
+
+            if (s_out.Length > 0)
+            {
+                if (s_out.StartsWith("\n")) s_out = s_out.Substring(1);
+                message += "PianoPlayerHelper standard output:\n\n" + s_out;
+            }
+            if (e_out.Length > 0)
+            {
+                if (e_out.StartsWith("\n")) e_out = e_out.Substring(1);
+                message += "\n\nPianoPlayerHelper error output:\n\n" + e_out;
+            }
+            return message;
         }
         // ================================================
     }

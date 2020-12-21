@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Windows;
+using System.Runtime.InteropServices;
 
 namespace Piano_Player
 {
@@ -22,6 +24,7 @@ namespace Piano_Player
             foreach (char ch in text) if (!char.IsDigit(ch)) return false;
             return true;
         }
+
         public static string NumberOnlyString(string input)
         {
             string result = "";

@@ -1,0 +1,1 @@
+The PianoPlayerHelper project was built using the Eclipse IDE.
