@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Piano_Player"
         mc:Ignorable="d"
-        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Title="Piano Player - Error" Height="550" Width="550">
     <Grid Background="#eeeeee">
