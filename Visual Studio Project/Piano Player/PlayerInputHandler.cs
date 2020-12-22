@@ -41,8 +41,9 @@ namespace Piano_Player
                     "it's automated input will work on less applications.", "Piano Player");
             }
 
-            //this thread will make sure to deal with the server stuff
-            //should the Java helper be used
+            //this thread will make sure to deal with the pinging stuff
+            //should the Java helper be used if the java helper doesn't recieve a
+            //ping within every 3 seconds, it automatically closes
             Thread t = new Thread(() =>
             {
                 while (true)
@@ -85,7 +86,7 @@ namespace Piano_Player
             if (javaHelperProcess.HasExited && !parentPlayer.IsPlaying) return;
 
             //catch and handle an error should it ever occur
-            //if (javaHelperProcess.HasExited && parentPlayer.IsPlaying)
+            if (javaHelperProcess.HasExited && parentPlayer.IsPlaying)
             {
                 parentPlayer.Player_Pause();
                 MessageBox.Show("The PianoPlayerHelper.jar Process " +
