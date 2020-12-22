@@ -8,45 +8,52 @@
         GotKeyboardFocus="Window_GotKeyboardFocus" LostKeyboardFocus="Window_LostKeyboardFocus"
         Closed="Window_Closed"
         WindowStartupLocation="CenterScreen"
-        Title="Piano Player" Height="550" Width="450" ResizeMode="CanMinimize">
+        Width="450" Height="550"
+        MinWidth="450" MinHeight="400"
+        Title="Piano Player">
+
     <Grid Background="#eeee">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+
         <TextBox x:Name="edit_sheets"
             FontFamily="Courier New"
-            HorizontalAlignment="Left" VerticalAlignment="Top"
-            Width="414" Height="382"
-            Margin="10,118,0,0" Padding="10,10,10,10"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+            Margin="10,150,10,10" Padding="10,10,10,10"
             TextWrapping="NoWrap" AcceptsReturn="True" AcceptsTab="True"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             Uid="edit_sheets" TextChanged="edit_sheets_TextChanged"
         />
-        <ProgressBar x:Name="progress_bar" x:FieldModifier="public" HorizontalAlignment="Left" Height="20" Margin="10,93,0,0" VerticalAlignment="Top" Width="414" Value="0" Foreground="Red"/>
-        <Button x:Name="btn_playpause" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Width="50" Height="50" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" Click="btn_playpause_Click">
+        
+        <ProgressBar x:Name="progress_bar" x:FieldModifier="public"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                     Margin="10,120,10,0" Height="20"
+                     Value="0" Foreground="Red"/>
+        
+        <Button x:Name="btn_playpause" HorizontalAlignment="Left" Margin="15,45,0,0" VerticalAlignment="Top" Width="50" Height="50" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" Click="btn_playpause_Click">
             <StackPanel>
                 <Image x:Name="img_btn_playpause" Source="Images/btn_play.png" />
             </StackPanel>
         </Button>
-        <Button x:Name="btn_stop" HorizontalAlignment="Left" Margin="65,20,0,0" VerticalAlignment="Top" Width="50" Height="50" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" Click="btn_stop_Click">
+        
+        <Button x:Name="btn_stop" HorizontalAlignment="Left" Margin="70,45,0,0" VerticalAlignment="Top" Width="50" Height="50" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" Click="btn_stop_Click">
             <StackPanel>
                 <Image x:Name="img_btn_stop" Source="Images/btn_stop.png" />
             </StackPanel>
         </Button>
-        <Button x:Name="btn_reset" HorizontalAlignment="Left" Margin="120,20,0,0" VerticalAlignment="Top" Width="50" Height="50" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" Click="btn_reset_Click">
+        
+        <Button x:Name="btn_reset" HorizontalAlignment="Left" Margin="125,45,0,0" VerticalAlignment="Top" Width="50" Height="50" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" Click="btn_reset_Click">
             <StackPanel x:Name="img_btn_reset">
                 <Image Source="Images/btn_reset.png" />
             </StackPanel>
         </Button>
         
-        <TextBox x:Name="edit_timePerNote" HorizontalAlignment="Left" Height="23" Margin="304,9,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" TextChanged="edit_timePerNote_TextChanged"/>
-        <TextBox x:Name="edit_timePerSpace" HorizontalAlignment="Left" Height="23" Margin="304,37,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" TextChanged="edit_timePerSpace_TextChanged"/>
-        <TextBox x:Name="edit_timePerBreak" HorizontalAlignment="Left" Height="23" Margin="304,65,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" TextChanged="edit_timePerBreak_TextChanged"/>
+        <TextBox x:Name="edit_timePerNote" HorizontalAlignment="Right" Height="23" Margin="0,29,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" TextChanged="edit_timePerNote_TextChanged"/>
+        <TextBox x:Name="edit_timePerSpace" HorizontalAlignment="Right" Height="23" Margin="0,57,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" TextChanged="edit_timePerSpace_TextChanged"/>
+        <TextBox x:Name="edit_timePerBreak" HorizontalAlignment="Right" Height="23" Margin="0,85,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" TextChanged="edit_timePerBreak_TextChanged"/>
 
-        <Label Content="Time per note (ms):" HorizontalAlignment="Left" Margin="184,10,0,0" VerticalAlignment="Top" Height="22" Width="115" FontSize="11" />
-        <Label Content="Time per space (ms):" HorizontalAlignment="Left" Margin="184,37,0,0" VerticalAlignment="Top" Height="23" Width="115" FontSize="11" />
-        <Label Content="Time per break (ms):" HorizontalAlignment="Left" Margin="184,64,0,0" VerticalAlignment="Top" Height="23" Width="115" FontSize="11" />
+        <Label Content="Time per note (ms):" HorizontalAlignment="Right" Margin="0,30,140,0" VerticalAlignment="Top" Height="22" Width="115" FontSize="11" />
+        <Label Content="Time per space (ms):" HorizontalAlignment="Right" Margin="0,57,140,0" VerticalAlignment="Top" Height="23" Width="115" FontSize="11" />
+        <Label Content="Time per break (ms):" HorizontalAlignment="Right" Margin="0,84,140,0" VerticalAlignment="Top" Height="23" Width="115" FontSize="11" />
 
     </Grid>
 </Window>
