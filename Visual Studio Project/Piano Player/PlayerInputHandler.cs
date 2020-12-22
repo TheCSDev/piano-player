@@ -85,12 +85,14 @@ namespace Piano_Player
             if (javaHelperProcess.HasExited && !parentPlayer.IsPlaying) return;
 
             //catch and handle an error should it ever occur
-            if (javaHelperProcess.HasExited && parentPlayer.IsPlaying)
+            //if (javaHelperProcess.HasExited && parentPlayer.IsPlaying)
             {
                 parentPlayer.Player_Pause();
                 MessageBox.Show("The PianoPlayerHelper.jar Process " +
                     "has unexpectedly crashed.\n\n" +
-                    GetProcessLogOuput(javaHelperProcess), "Piano Player");
+                    GetProcessLogOuput(javaHelperProcess), "Piano Player",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
             }
 
             javaHelperProcess.StandardInput.WriteLine("/" + args);
