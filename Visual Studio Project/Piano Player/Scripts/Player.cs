@@ -180,25 +180,7 @@ namespace Piano_Player
             public void Reset() { RemainingKeys = new List<string>(FullSheet); }
         }
         //
-        private PianoSheet _CurrentSheet = new PianoSheet
-                 ("t|y|[qp]|\r\n"
-                + "o o|i|[wo]|\r\n"
-                + "i i|u|[ei]|\r\n"
-                + "u u|y|[ru]|\r\n"
-                + "y y|t|r|t|[pq2]|\r\n"
-                + "o o|i|[ow3]|\r\n"
-                + "i i|u|[ie4]|\r\n"
-                + "u u|y|[ur5]|\r\n"
-                + "y y|t|r|t|[pq2]\r\n"
-                + "u i o o|i|[ow3]\r\n"
-                + "y u i i|u|[ie4]\r\n"
-                + "t y u u|y|[ur5]\r\n"
-                + "r t y y|t||[pq2]||||o||||[p02]| |\r\n"
-                + "i|u|[ow3]||||i||||[or5]| |\r\n"
-                + "i|u|[ow] |\r\n"
-                + "i|u|[ie] |\r\n"
-                + "u|y|[ur] |\r\n"
-                + "y|||[q2t]");
+        private PianoSheet _CurrentSheet = new PianoSheet("");
         public PianoSheet CurrentSheet
         {
             get { return _CurrentSheet; }

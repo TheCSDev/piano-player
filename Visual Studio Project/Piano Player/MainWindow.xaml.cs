@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,12 +13,15 @@ namespace Piano_Player
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Player PianoPlayer = null;
-
-        public MainWindow()
+        // =======================================================
+        public Player PianoPlayer { get; private set; }
+        public SaveLoadSystem SheetSaveLoad { get; private set; }
+        // =======================================================
+        public MainWindow(string[] Args)
         {
             InitializeComponent();
             PianoPlayer = new Player(this);
+            SheetSaveLoad = new SaveLoadSystem(this);
 
             PianoPlayer.PlayStateChanged += UpdateUI;
             PianoPlayer.PlayerProgressChanged += UpdateUI;
@@ -25,23 +30,88 @@ namespace Piano_Player
             edit_timePerSpace.Text = "" + PianoPlayer.SpaceTime;
             edit_timePerBreak.Text = "" + PianoPlayer.BreakTime;
             edit_sheets.Text = PianoPlayer.CurrentSheet.RawSheet;
+
+            SheetSaveLoad.ChangesSaved = true;
+            if (Args.Length > 0 && Args[0].EndsWith(App.FileExtension) && File.Exists(Args[0]))
+                SheetSaveLoad.LoadFile(Args[0]);
         }
-        
+        // =======================================================
         private void edit_sheets_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (PianoPlayer == null) return;
             PianoPlayer.CurrentSheet = new Player.PianoSheet(edit_sheets.Text);
+            SheetSaveLoad.OnChangesMade();
         }
 
-        private void btn_playpause_Click(object sender, RoutedEventArgs e)
+        private void edit_timePerNote_TextChanged(object sender, TextChangedEventArgs e)
         {
-            PianoPlayer.Player_Toggle();
+            if (!App.IsStringANumber(edit_timePerNote.Text) || PianoPlayer == null)
+            {
+                edit_timePerNote.Text = App.NumberOnlyString(edit_timePerNote.Text);
+                return;
+            }
+
+            try
+            {
+                PianoPlayer.NoteTime = int.Parse(edit_timePerNote.Text);
+                SheetSaveLoad.OnChangesMade();
+            }
+            catch (Exception) { Console.WriteLine("> Parsing error while setting Player.NoteTime."); }
+            
+            if (PianoPlayer.NoteTime < 10)
+            {
+                PianoPlayer.NoteTime = 10;
+                edit_timePerNote.Text = "10";
+            }
         }
 
-        private void btn_stop_Click(object sender, RoutedEventArgs e)
+        private void edit_timePerSpace_TextChanged(object sender, TextChangedEventArgs e)
         {
-            PianoPlayer.Player_Stop();
+            if (!App.IsStringANumber(edit_timePerSpace.Text) || PianoPlayer == null)
+            {
+                edit_timePerSpace.Text = App.NumberOnlyString(edit_timePerSpace.Text);
+                return;
+            }
+
+            try
+            {
+                PianoPlayer.SpaceTime = int.Parse(edit_timePerSpace.Text);
+                SheetSaveLoad.OnChangesMade();
+            }
+            catch (Exception) { Console.WriteLine("> Parsing error while setting Player.SpaceTime."); }
+
+            if (PianoPlayer.SpaceTime < 10)
+            {
+                PianoPlayer.SpaceTime = 10;
+                edit_timePerSpace.Text = "10";
+            }
         }
+
+        private void edit_timePerBreak_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!App.IsStringANumber(edit_timePerBreak.Text) || PianoPlayer == null)
+            {
+                edit_timePerBreak.Text = App.NumberOnlyString(edit_timePerBreak.Text);
+                return;
+            }
+
+            try
+            {
+                PianoPlayer.BreakTime = int.Parse(edit_timePerBreak.Text);
+                SheetSaveLoad.OnChangesMade();
+            }
+            catch (Exception) { Console.WriteLine("> Parsing error while setting Player.BreakTime."); }
+
+            if (PianoPlayer.BreakTime < 10)
+            {
+                PianoPlayer.BreakTime = 10;
+                edit_timePerBreak.Text = "10";
+            }
+        }
+
+        private void btn_playpause_Click(object sender, RoutedEventArgs e) { PianoPlayer.Player_Toggle(); }
+
+        private void btn_stop_Click(object sender, RoutedEventArgs e) { PianoPlayer.Player_Stop(); }
 
         private void btn_reset_Click(object sender, RoutedEventArgs e)
         {
@@ -72,6 +142,12 @@ namespace Piano_Player
             PianoPlayer.IsMainWindowKeyboardFocused = Keyboard.FocusedElement != null;
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            e.Cancel = !CloseWithSaveDialog();
+        }
+
         private void Window_Closed(object sender, EventArgs e)
         {
             if (PianoPlayer == null) return;
@@ -79,63 +155,22 @@ namespace Piano_Player
             PianoPlayer.PlayerAlive = false;
         }
 
-        private void edit_timePerNote_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!App.IsStringANumber(edit_timePerNote.Text) || PianoPlayer == null)
-            {
-                edit_timePerNote.Text = App.NumberOnlyString(edit_timePerNote.Text);
-                return;
-            }
+        private void menu_file_new_Click(object sender, RoutedEventArgs e) { SheetSaveLoad.NewFile(); }
 
-            try { PianoPlayer.NoteTime = int.Parse(edit_timePerNote.Text); }
-            catch (Exception) { Console.WriteLine("> Parsing error while setting Player.NoteTime."); }
-            if (PianoPlayer.NoteTime < 10)
-            {
-                PianoPlayer.NoteTime = 10;
-                edit_timePerNote.Text = "10";
-            }
-        }
+        private void menu_file_open_Click(object sender, RoutedEventArgs e) { SheetSaveLoad.OpenFile(); }
 
-        private void edit_timePerSpace_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!App.IsStringANumber(edit_timePerSpace.Text) || PianoPlayer == null)
-            {
-                edit_timePerSpace.Text = App.NumberOnlyString(edit_timePerSpace.Text);
-                return;
-            }
+        private void menu_file_save_Click(object sender, RoutedEventArgs e) { SheetSaveLoad.SaveFile(); }
 
-            try { PianoPlayer.SpaceTime = int.Parse(edit_timePerSpace.Text); }
-            catch (Exception) { Console.WriteLine("> Parsing error while setting Player.SpaceTime."); }
-            if (PianoPlayer.SpaceTime < 10)
-            {
-                PianoPlayer.SpaceTime = 10;
-                edit_timePerSpace.Text = "10";
-            }
-        }
+        private void menu_file_saveas_Click(object sender, RoutedEventArgs e) { SheetSaveLoad.SaveFileAs(); }
 
-        private void edit_timePerBreak_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!App.IsStringANumber(edit_timePerBreak.Text) || PianoPlayer == null)
-            {
-                edit_timePerBreak.Text = App.NumberOnlyString(edit_timePerBreak.Text);
-                return;
-            }
-
-            try { PianoPlayer.BreakTime = int.Parse(edit_timePerBreak.Text); }
-            catch (Exception) { Console.WriteLine("> Parsing error while setting Player.BreakTime."); }
-            if (PianoPlayer.BreakTime < 10)
-            {
-                PianoPlayer.BreakTime = 10;
-                edit_timePerBreak.Text = "10";
-            }
-        }
-
-        public void UpdateUI()
+        private void menu_file_exit_Click(object sender, RoutedEventArgs e) { Close(); }
+        // =======================================================
+        public void UpdateUI() 
         {
             if (PianoPlayer == null) return;
 
             if (Application.Current != null)
-            Application.Current.Dispatcher.Invoke(() =>
+                Application.Current.Dispatcher.Invoke(() =>
             {
                 bool playing = PianoPlayer.IsPlaying;
                 if (!playing)
@@ -146,5 +181,21 @@ namespace Piano_Player
                 progress_bar.Value = PianoPlayer.PlayerProgress;
             });
         }
+        // =======================================================
+        /// <summary>
+        /// Returns true if the window is allowed to close or if the user
+        /// chooses not to save their changes.
+        /// </summary>
+        /// <returns></returns>
+        public bool CloseWithSaveDialog()
+        {
+            System.Windows.Forms.DialogResult dr = SheetSaveLoad.ShowConfirmationDialog();
+            if (dr == System.Windows.Forms.DialogResult.Cancel) return false;
+            else if (dr == System.Windows.Forms.DialogResult.Yes)
+                if (!SheetSaveLoad.SaveFile()) return false;
+
+            return true;
+        }
+        // =======================================================
     }
 }

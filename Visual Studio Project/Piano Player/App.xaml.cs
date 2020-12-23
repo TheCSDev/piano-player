@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Runtime.InteropServices;
 
 namespace Piano_Player
 {
@@ -11,6 +9,19 @@ namespace Piano_Player
     /// </summary>
     public partial class App : Application
     {
+        public const string FileExtension = "ppsf";
+        public const int FileVersion = 1;
+        public static string[] StartupArgs { get; private set; }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            StartupArgs = e.Args;
+
+            MainWindow wnd = new MainWindow(e.Args);
+            wnd.Show();
+        }
+
         /*
         //bVk         - A virtual-key code. (0-254)
         //bScan       - A hardware scan code for the key. (0x45)

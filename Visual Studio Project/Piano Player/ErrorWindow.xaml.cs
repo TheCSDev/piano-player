@@ -1,16 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Piano_Player
 {
@@ -19,9 +8,14 @@ namespace Piano_Player
     /// </summary>
     public partial class ErrorWindow : Window
     {
-        public ErrorWindow()
+        public ErrorWindow() { InitializeComponent(); }
+
+        public static void ShowExceptionWindow(string message, Exception e)
         {
-            InitializeComponent();
+            ErrorWindow wnd = new ErrorWindow();
+            message += "\n\nMessage: " + e.Message + "\n\n" + e.StackTrace;
+            wnd.edit_text.Text = message;
+            wnd.ShowDialog();
         }
     }
 }

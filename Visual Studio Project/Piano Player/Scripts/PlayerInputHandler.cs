@@ -165,7 +165,7 @@ namespace Piano_Player
             //show the error window
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.edit_text.Text = message;
-            errorWindow.Show();
+            errorWindow.ShowDialog();
         }
         public static String GetProcessLogOuput(Process proc)
         {
