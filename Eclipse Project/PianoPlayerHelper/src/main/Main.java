@@ -38,10 +38,10 @@ public class Main
 				while(true)
 				{
 					try { Thread.sleep(100); } catch(Exception e) {}
-					
 					//Thanks to timeout, the helper will automatically exit about 3 seconds
 					//after the main player application exits.
-					if(System.currentTimeMillis() - lastPingTime > 3000) System.exit(0);
+					if(lastPingTime <= 0) System.exit(0);
+					lastPingTime -= 100;
 				}
 			}
 		});
@@ -103,7 +103,7 @@ public class Main
 		}
 		else if(cmd.startsWith("ping"))
 		{
-			lastPingTime = System.currentTimeMillis();
+			lastPingTime = 3000;
 			return;
 		}
 	}

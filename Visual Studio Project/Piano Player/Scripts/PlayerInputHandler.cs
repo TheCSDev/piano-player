@@ -66,17 +66,29 @@ namespace Piano_Player
         public void KeyPress(VirtualKeyCode keyCode)
         {
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyPress(keyCode);
-            else SendCommandToHelper("key-press " + (int)keyCode);
+            else
+            {
+                if(keyCode == VirtualKeyCode.LSHIFT) SendCommandToHelper("key-press " + 16);
+                else SendCommandToHelper("key-press " + (int)keyCode);
+            }
         }
         public void KeyDown(VirtualKeyCode keyCode)
         {
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyDown(keyCode);
-            else SendCommandToHelper("key-down " + (int)keyCode);
+            else
+            {
+                if (keyCode == VirtualKeyCode.LSHIFT) SendCommandToHelper("key-down " + 16);
+                else SendCommandToHelper("key-down " + (int)keyCode);
+            }
         }
         public void KeyUp(VirtualKeyCode keyCode)
         {
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyUp(keyCode);
-            else SendCommandToHelper("key-up " + (int)keyCode);
+            else
+            {
+                if (keyCode == VirtualKeyCode.LSHIFT) SendCommandToHelper("key-up " + 16);
+                else SendCommandToHelper("key-up " + (int)keyCode);
+            }
         }
         // ================================================
         public void SendCommandToHelper(string args)
