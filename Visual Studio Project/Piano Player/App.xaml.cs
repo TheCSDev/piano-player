@@ -58,6 +58,7 @@ namespace Piano_Player
         {
             //startup setup
             base.OnStartup(e);
+            CAS = null;
             StartupArgs = e.Args;
 
             //grab current app settings and check for updates

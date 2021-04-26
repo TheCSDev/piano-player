@@ -15,11 +15,10 @@
     <Grid Background="#eeee">
 
         <TextBox x:Name="edit_sheets"
-            UndoLimit="30"
-            FontFamily="Courier New"
+            UndoLimit="30" FontFamily="Courier New"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
             Margin="10,150,10,10" Padding="10,10,10,10"
-            TextWrapping="NoWrap" AcceptsReturn="True" AcceptsTab="True"
+            TextWrapping="NoWrap" AcceptsReturn="True" AcceptsTab="False"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             Uid="edit_sheets" TextChanged="edit_sheets_TextChanged"
@@ -67,6 +66,9 @@
             <MenuItem Header="Player">
                 <MenuItem x:Name="menu_player_playpause" Header="Play/Pause" Click="btn_playpause_Click"/>
                 <MenuItem x:Name="menu_player_stop" Header="Stop" Click="btn_stop_Click"/>
+            </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem x:Name="menu_tools_mergesheets" Header="Merge sheets" Click="menu_tools_mergesheets_Click"/>
             </MenuItem>
         </Menu>
 

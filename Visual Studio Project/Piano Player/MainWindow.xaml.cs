@@ -179,6 +179,12 @@ namespace Piano_Player
         private void menu_file_saveas_Click(object sender, RoutedEventArgs e) { SheetSaveLoad.SaveFileAs(); }
 
         private void menu_file_exit_Click(object sender, RoutedEventArgs e) { Close(); }
+
+        private void menu_tools_mergesheets_Click(object sender, RoutedEventArgs e)
+        {
+            new SheetMergerWindow(this).Show();
+            menu_tools_mergesheets.IsEnabled = false;
+        }
         // =======================================================
         public void UpdateUI() 
         {
