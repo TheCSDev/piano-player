@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterScreen"
         Width="450" Height="550"
         MinWidth="450" MinHeight="400"
-        Title="Piano Player">
+        Title="Piano Player v1.2">
 
     <Grid Background="#eeee">
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Reflection;
 using System.Diagnostics;
 using System.Windows.Forms;
 using WindowsInput;
@@ -12,8 +11,6 @@ namespace Piano_Player
     public class PlayerInputHandler
     {
         // ================================================
-        public static string JavaHelperPath { get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/PianoPlayerHelper.jar"; } }
-
         public Player parentPlayer { get; private set; }
         public InputSimulator inputSimulator { get; private set; }
         public bool isJavaInstalled { get; private set; }
@@ -28,7 +25,7 @@ namespace Piano_Player
             inputSimulator = new InputSimulator();
             RefreshData();
 
-            if (!isJavaInstalled)
+            if (!isJavaInstalled && File.Exists(App.JavaHelperPath))
             {
                 MessageBox.Show("Please note that most applications block automated " +
                     "input, which is why this application may not work on some " +
@@ -39,6 +36,11 @@ namespace Piano_Player
                     "the latest version of Java on your device. If you choose not " +
                     "to install Java, this application will still run as normal, but " +
                     "it's automated input will work on less applications.", "Piano Player");
+            }
+
+            if (!File.Exists(App.JavaHelperPath))
+            {
+                MessageBox.Show(App.JavaHelperPath + "\n\ncould not be found.", "Piano Player");
             }
 
             //this thread will make sure to deal with the pinging stuff
@@ -60,7 +62,7 @@ namespace Piano_Player
         public void RefreshData()
         {
             isJavaInstalled = App.Where("java.exe") != null;
-            canUseJavaHelper = isJavaInstalled && File.Exists(JavaHelperPath);
+            canUseJavaHelper = isJavaInstalled && File.Exists(App.JavaHelperPath);
         }
         // ================================================
         public void KeyPress(VirtualKeyCode keyCode)
@@ -131,7 +133,7 @@ namespace Piano_Player
             Process proc = new Process();
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.FileName = "javaw";
-            proc.StartInfo.Arguments = "-jar \"" + JavaHelperPath + "\" \"" + "null" + "\"";
+            proc.StartInfo.Arguments = "-jar \"" + App.JavaHelperPath + "\" \"" + "null" + "\"";
             proc.StartInfo.RedirectStandardOutput = true;
             proc.StartInfo.RedirectStandardError = true;
             proc.Start();
@@ -159,7 +161,7 @@ namespace Piano_Player
             javaHelperProcess = new Process();
             javaHelperProcess.StartInfo.UseShellExecute = false;
             javaHelperProcess.StartInfo.FileName = "javaw";
-            javaHelperProcess.StartInfo.Arguments = "-jar \"" + JavaHelperPath + "\" \"" + "start-helper" + "\"";
+            javaHelperProcess.StartInfo.Arguments = "-jar \"" + App.JavaHelperPath + "\" \"" + "start-helper" + "\"";
             javaHelperProcess.StartInfo.RedirectStandardInput = true;
             javaHelperProcess.StartInfo.RedirectStandardOutput = true;
             javaHelperProcess.StartInfo.RedirectStandardError = true;

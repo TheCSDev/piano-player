@@ -114,7 +114,7 @@ namespace Piano_Player
 
                 if (ppsf.FileVersion != App.FileVersion)
                     throw new Exception("This version of Piano Player is unable to " +
-                        "load ppsf files with FileVersions that aren't v" + App.FileVersion +
+                        "load ppsf files with file versions that aren't: " + App.FileVersion +
                         "\nThe chosen file's version is: " + ppsf.FileVersion);
 
                 if(ppsf.Sheets != null && ppsf.Sheets.Length > 0)

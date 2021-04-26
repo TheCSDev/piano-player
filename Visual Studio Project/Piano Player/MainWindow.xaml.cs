@@ -57,11 +57,16 @@ namespace Piano_Player
                 SheetSaveLoad.OnChangesMade();
             }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.NoteTime."); }
-            
+
             if (PianoPlayer.NoteTime < 10)
             {
                 PianoPlayer.NoteTime = 10;
                 edit_timePerNote.Text = "10";
+            }
+            else if (PianoPlayer.NoteTime > 10000)
+            {
+                PianoPlayer.NoteTime = 10000;
+                edit_timePerNote.Text = "10000";
             }
         }
 
@@ -85,6 +90,11 @@ namespace Piano_Player
                 PianoPlayer.SpaceTime = 10;
                 edit_timePerSpace.Text = "10";
             }
+            else if (PianoPlayer.SpaceTime > 10000)
+            {
+                PianoPlayer.SpaceTime = 10000;
+                edit_timePerSpace.Text = "10000";
+            }
         }
 
         private void edit_timePerBreak_TextChanged(object sender, TextChangedEventArgs e)
@@ -106,6 +116,11 @@ namespace Piano_Player
             {
                 PianoPlayer.BreakTime = 10;
                 edit_timePerBreak.Text = "10";
+            }
+            else if (PianoPlayer.BreakTime > 10000)
+            {
+                PianoPlayer.BreakTime = 10000;
+                edit_timePerBreak.Text = "10000";
             }
         }
 

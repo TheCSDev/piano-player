@@ -19,11 +19,14 @@ namespace Piano_Player
         public readonly MainWindow parentWindow;
         //allows the new executed thread to access this class
         public readonly Player ThisPlayer;
-        //when set to false, the new threaad stops, and the player becomes useless
+        //when set to false, the new thread stops, and the player becomes useless
         //the owner window modifies this variable
         public bool PlayerAlive { get; set; } = true;
         //the owner window modifies this variable
         public bool IsMainWindowKeyboardFocused = true;
+        //returns true if no notes were played last "frame" because
+        //the player was either paused or the window was in focus
+        public bool PausedLastFrame { get; private set; } = true;
 
         public PlayerInputHandler inputHandler { get; private set; }
 
@@ -46,10 +49,18 @@ namespace Piano_Player
                     //Check if the main window is in focus, and if it is,
                     //don't do anything.
                     bool focus = IsMainWindowKeyboardFocused;
-                    if (focus) { continue; }
+                    if (focus) { PausedLastFrame = true; continue; }
 
                     //Also don't do anything if the player isn't playing
-                    if (!ThisPlayer.IsPlaying) { continue; }
+                    if (!ThisPlayer.IsPlaying) { PausedLastFrame = true;  continue; }
+
+                    //if the player was paused last "frame", wait a little
+                    //because of a "bug" that'd occur without the wait
+                    if (PausedLastFrame)
+                    {
+                        PausedLastFrame = false;
+                        Thread.Sleep(500);
+                    }
 
                     //Press the keys
                     if (ThisPlayer.CurrentSheet.RemainingKeys.Count > 0)
@@ -133,7 +144,8 @@ namespace Piano_Player
 
                 //remove double spaces
                 input_sheet = Regex.Replace(input_sheet, @"[ ]{2,}", " ", RegexOptions.None);
-                //fix the bug where the last note isn't played
+                //"fix" the bug where the last note isn't played
+                //(what a lazy way to fix a bug...)
                 input_sheet += " ";
 
                 bool grouped = false;
@@ -192,9 +204,22 @@ namespace Piano_Player
             }
         }
         // -------------------------------------------------------
-        public int NoteTime { get; set; } = 150; //ms
-        public int SpaceTime { get; set; } = 150; //ms
-        public int BreakTime { get; set; } = 400; //ms
+        private int _noteTime = 150, _spaceTime = 150, _breakTime = 400; //ms
+        public int NoteTime
+        {
+            get { return _noteTime; }
+            set { _noteTime = App.ClampInt(value, 10, 10000); }
+        }
+        public int SpaceTime
+        {
+            get { return _spaceTime; }
+            set { _spaceTime = App.ClampInt(value, 10, 10000); }
+        }
+        public int BreakTime
+        {
+            get { return _breakTime; }
+            set { _breakTime = App.ClampInt(value, 10, 10000); }
+        }
         // -------------------------------------------------------
         public bool IsPlaying { get; private set; } = false;
         public delegate void PlayStateChangedHandler();
