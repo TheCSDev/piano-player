@@ -27,11 +27,8 @@ namespace Piano_Player
             ParentWindow = parent;
             InitializeComponent();
         }
+        // =======================================================
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            ParentWindow.menu_tools_mergesheets.IsEnabled = true;
-        }
         // =======================================================
     }
 }

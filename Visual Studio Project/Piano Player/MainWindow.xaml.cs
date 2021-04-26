@@ -182,8 +182,8 @@ namespace Piano_Player
 
         private void menu_tools_mergesheets_Click(object sender, RoutedEventArgs e)
         {
-            new SheetMergerWindow(this).Show();
-            menu_tools_mergesheets.IsEnabled = false;
+            PianoPlayer.Player_Pause();
+            new SheetMergerWindow(this).ShowDialog();
         }
         // =======================================================
         public void UpdateUI() 
