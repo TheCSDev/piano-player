@@ -7,9 +7,23 @@ namespace Piano_Player
     {
         public int FileVersion { get; set; }
 
-        public int TimePerNote { get; set; }
-        public int TimePerSpace { get; set; }
-        public int TimePerBreak { get; set; }
+
+        private int _noteTime = 150, _spaceTime = 150, _breakTime = 400; //ms
+        public int TimePerNote
+        {
+            get { return _noteTime; }
+            set { _noteTime = App.ClampInt(value, 10, 10000); }
+        }
+        public int TimePerSpace
+        {
+            get { return _spaceTime; }
+            set { _spaceTime = App.ClampInt(value, 10, 10000); }
+        }
+        public int TimePerBreak
+        {
+            get { return _breakTime; }
+            set { _breakTime = App.ClampInt(value, 10, 10000); }
+        }
 
         public string[] Sheets { get; set; }
 

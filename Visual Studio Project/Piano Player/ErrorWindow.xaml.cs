@@ -15,6 +15,7 @@ namespace Piano_Player
             ErrorWindow wnd = new ErrorWindow();
             message += "\n\nMessage: " + e.Message + "\n\n" + e.StackTrace;
             wnd.edit_text.Text = message;
+            //it is important that the error window is shown as a dialog
             wnd.ShowDialog();
         }
     }

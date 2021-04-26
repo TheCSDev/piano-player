@@ -67,7 +67,8 @@ namespace Piano_Player
                 
                 File.Delete(SaveFilePath);
                 File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(ppsf));
-                
+
+                ChangesSaved = true;
                 return true;
             }
             catch (Exception e)
