@@ -116,6 +116,7 @@ namespace Piano_Player
         {
             string result = "";
             foreach (char ch in input) if (char.IsDigit(ch)) result += ch;
+            if (result.Length == 0) result = "0";
             return result;
         }
         // -------------------------------------------------------

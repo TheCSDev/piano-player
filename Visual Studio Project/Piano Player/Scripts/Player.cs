@@ -15,6 +15,7 @@ namespace Piano_Player
         //and the character order is important as well
         public const string SpecialCharKeys = "!@ $%^ *(";
         public const string SpecialCharKeysShift = "12 456 89";
+        public const char PlayerCommandPrefix = '_';
         // =======================================================
         public readonly MainWindow parentWindow;
         //allows the new executed thread to access this class
@@ -68,10 +69,28 @@ namespace Piano_Player
                         string keys = ThisPlayer.CurrentSheet.RemainingKeys[0];
                         ThisPlayer.CurrentSheet.RemainingKeys.RemoveAt(0);
 
+                        //check if there is a command that needs to be executed
+                        if (keys.StartsWith("" + PlayerCommandPrefix) && keys.Length > 1)
+                        {
+                            keys = keys.Substring(1);
+
+                            //wait command
+                            if (keys.StartsWith("w "))
+                            {
+                                keys = keys.Substring(2);
+                                try { Thread.Sleep(App.ClampInt(int.Parse(keys), 10, 10000)); }
+                                catch (Exception) { }
+                            }
+                        }
+                        //if not, continue pressing the keys
+                        else
                         foreach (char ch in keys)
                         {
-                            if (ch == ' ') Thread.Sleep(SpaceTime);
-                            else if (ch == '|') Thread.Sleep(BreakTime);
+                            //update 1.2: breaks are ignored in note groups
+                            //aka breaks only work when keys length is 1
+                            if (ch == ' ') { if (keys.Length == 1) Thread.Sleep(SpaceTime); }
+                            else if (ch == '|') { if (keys.Length == 1) Thread.Sleep(BreakTime); }
+                            else if (ch == PlayerCommandPrefix) { /*do nothing*/ }
                             else
                             {
                                 if (SpecialCharKeys.Contains("" + ch))
@@ -110,6 +129,12 @@ namespace Piano_Player
         // =======================================================
         public class PianoSheet
         {
+            public static explicit operator PianoSheet(PianoPlayerSheetFile a)
+            {
+                try { return new PianoSheet(a.Sheets[0]); }
+                catch (Exception) { return new PianoSheet(""); }
+            }
+
             /* A sheet is a list of strings.
              * Each string in a sheet (list) represents a set of notes
              * that need to be pressed at once per beat.
@@ -134,6 +159,20 @@ namespace Piano_Player
                 FullSheet = new List<string>();
                 RemainingKeys = new List<string>();
 
+                //make sure the command prefix doesnt conflict with the
+                //special keys
+                if ("[]| !@$^*(".Contains(PlayerCommandPrefix) ||
+                    char.IsLetterOrDigit(PlayerCommandPrefix))
+                {
+                    ErrorWindow.ShowExceptionWindow(
+                        "Invalid player command prefix: \"" + PlayerCommandPrefix + "\".",
+                        new Exception(
+                            "Player command prefix must not be one " +
+                            "of the following characters:\n\"[]| !@$^*(\"\n" +
+                            "And it also must not be a letter or a digit."));
+                    Environment.Exit(0);
+                }
+
                 //Convert the data from input_sheet to FullSheet
 
                 //first off, deal with new line characters
@@ -153,7 +192,7 @@ namespace Piano_Player
                 foreach (char ch in input_sheet)
                 {
                     //Skip all characters besides the supported characters
-                    if (!char.IsLetterOrDigit(ch) && !"[]| !@$^*(".Contains(""+ch)) continue;
+                    if (!char.IsLetterOrDigit(ch) && !("[]| !@$^*("+PlayerCommandPrefix).Contains(""+ch)) continue;
 
                     //Move on with the complicated process
                     if (!grouped && next_notes.Length > 0)
@@ -172,12 +211,16 @@ namespace Piano_Player
                         //There are 2 types of grouped notes:
                         //1st one is [abc] which means play all 3 of them at once
                         //2nd one is [a b c] which means play those notes fast 1 by one
-                        if (next_notes.Contains(" ")) //if the type is 2nd, handle it
+                        //
+                        //edit: in update 1.2, space in note groups will be allowed,
+                        //and the player will now ignore spaces in grouped notes.
+                        //space in grouped notes will be used for player "commands"
+                        /*if (next_notes.Contains(" ")) //if the type is 2nd, handle it
                         {
                             next_notes = next_notes.Replace(" ", "");
                             foreach (char i in next_notes) FullSheet.Add("" + i);
                             next_notes = "";
-                        }
+                        }*/
 
                         //Conclude character grouping
                         grouped = false;

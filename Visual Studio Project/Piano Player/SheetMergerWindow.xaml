@@ -37,12 +37,12 @@
                  Text="Sheet B"/>
 
         <TextBox x:Name="edit_merged_sheet" Padding="5" Background="White"
-            HorizontalAlignment="Stretch" Margin="5,100,10,10" VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch" Margin="5,120,10,10" VerticalAlignment="Stretch"
             TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="False"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             UndoLimit="30" FontFamily="Courier New"
-            Text="Merged sheet" Grid.Column="1" Grid.RowSpan="2"/>
+            Text="Merged sheets" Grid.Column="1" Grid.RowSpan="2"/>
 
         <Grid HorizontalAlignment="Stretch" Height="85" Margin="10,10,5,10" VerticalAlignment="Top">
             <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="17" Width="130" TextWrapping="WrapWithOverflow">Time per note (ms):</TextBlock>
@@ -66,7 +66,7 @@
             <Button x:Name="btn_b_load" Content="Load sheet B"  HorizontalAlignment="Stretch" Height="18" Margin="0,63,0,0" VerticalAlignment="Top" Click="btn_b_load_Click"/>
         </Grid>
 
-        <Grid HorizontalAlignment="Stretch" Height="85" Margin="5,10,10,0" VerticalAlignment="Top" Grid.Column="1">
+        <Grid HorizontalAlignment="Stretch" Height="105" Margin="5,10,10,0" VerticalAlignment="Top" Grid.Column="1">
             <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="17" Width="130" TextWrapping="WrapWithOverflow"><Run Text="Time per note (ms):"/></TextBlock>
             <TextBlock HorizontalAlignment="Left" Margin="0,21,0,0" VerticalAlignment="Top" Height="17" Width="130" TextWrapping="WrapWithOverflow"><Run Text="Time per space (ms):"/></TextBlock>
             <TextBlock HorizontalAlignment="Left" Margin="0,41,0,0" VerticalAlignment="Top" Height="18" Width="130" TextWrapping="WrapWithOverflow"><Run Text="Time per break (ms):"/></TextBlock>
@@ -74,7 +74,8 @@
             <TextBox x:Name="edit_merged_tpn" UndoLimit="30" HorizontalAlignment="Stretch" Height="18" Margin="135,0,0,0" TextWrapping="Wrap" Text="150" VerticalAlignment="Top"/>
             <TextBox x:Name="edit_merged_tps" UndoLimit="30" HorizontalAlignment="Stretch" Height="17" Margin="135,20,0,0" TextWrapping="Wrap" Text="150" VerticalAlignment="Top"/>
             <TextBox x:Name="edit_merged_tpb" UndoLimit="30" HorizontalAlignment="Stretch" Height="18" Margin="135,40,0,0" TextWrapping="Wrap" Text="400" VerticalAlignment="Top"/>
-            <Button x:Name="btn_merged_save" Content="Save merged sheet"  HorizontalAlignment="Stretch" Height="18" Margin="0,63,0,0" VerticalAlignment="Top" Click="btn_merged_save_Click"/>
+            <Button x:Name="btn_merged_merge" Content="Merge sheets"  HorizontalAlignment="Stretch" Height="18" Margin="0,63,0,0" VerticalAlignment="Top" Click="btn_merged_merge_Click"/>
+            <Button x:Name="btn_merged_save" Content="Save merged sheets"  HorizontalAlignment="Stretch" Height="18" Margin="0,86,0,0" VerticalAlignment="Top" Click="btn_merged_save_Click"/>
         </Grid>
     </Grid>
 </Window>

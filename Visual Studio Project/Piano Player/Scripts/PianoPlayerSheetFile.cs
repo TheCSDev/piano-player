@@ -5,6 +5,12 @@ namespace Piano_Player
     [Serializable]
     public class PianoPlayerSheetFile
     {
+        // =======================================================
+        /*public static explicit operator bool(PianoPlayerSheetFile a)
+        {
+            return a != null;
+        }*/
+        // =======================================================
         public int FileVersion { get; set; }
 
 
@@ -26,7 +32,7 @@ namespace Piano_Player
         }
 
         public string[] Sheets { get; set; }
-
+        // =======================================================
         public PianoPlayerSheetFile()
         {
             FileVersion = App.FileVersion;
@@ -35,5 +41,6 @@ namespace Piano_Player
             TimePerBreak = 400;
             Sheets = new string[] { "" };
         }
+        // =======================================================
     }
 }
