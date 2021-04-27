@@ -1,0 +1,66 @@
+﻿@echo off
+
+rem | It is important to run from downloads because
+rem | the batch script could run as admin (C://System32)
+cd %userprofile%\Downloads
+
+rem | Make sure the script has been given a "key" argument
+rem | to prevent the user from running this script
+if not "%*"=="run_update" (
+start /b "" cmd /c del "%~f0"&exit /b
+exit
+)
+
+rem >>> Define system variables
+rem 1. Veriables controlled by the app itself
+set APP_DIRECTORY=NULL
+set APP_UNINSTALLER_NAME=NULL
+set SETUP_FILE_URL=NULL
+
+rem 2. Constant variables
+set SETUP_FILE_NAME=PianoPlayer_Setup.exe
+
+rem Wait a little bit before running the update
+timeout 1
+
+rem Run the uninstaller and wait for it to finish
+start /w "" "%APP_DIRECTORY%\%APP_UNINSTALLER_NAME%"
+
+rem Check if the app is uninstalling. If not, quit the updater and delete this script.
+if not %errorlevel%==0 (
+goto exit
+)
+
+rem Wait for the app to finish uninstalling
+:loop1
+if not exist "%APP_DIRECTORY%/" ( goto loop2 )
+timeout 1
+goto loop1
+:loop2
+
+rem Execuute Windows Powershell and tell it to download the update file
+if exist "%SETUP_FILE_NAME%" ( goto exit )
+powershell -Command "(New-Object Net.WebClient).DownloadFile('%SETUP_FILE_URL%', '%SETUP_FILE_NAME%')"
+timeout 1 /nobreak
+
+rem Execute the downloaded update file
+start PianoPlayer_Setup.exe
+
+rem | Exit the process, delete the installer if it was
+rem | downloaded and used and make the batch file delete itself
+rem | Also do not allow the loop to run indefinitely
+:exit
+
+set /A counter=0
+:loop3
+set /A counter=%counter%+1
+if %counter% gtr 420 ( exit )
+
+timeout 1
+if exist "%SETUP_FILE_NAME%" (
+del "%SETUP_FILE_NAME%" /q
+if exist "%SETUP_FILE_NAME%" goto loop3
+)
+
+start /b "" cmd /c del "%~f0"&exit /b
+exit

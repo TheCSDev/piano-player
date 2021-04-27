@@ -4,6 +4,7 @@ using System.Net;
 using System.Windows;
 using System.Reflection;
 using System.Text.Json;
+using Piano_Player.Scripts;
 
 namespace Piano_Player
 {
@@ -25,6 +26,12 @@ namespace Piano_Player
                 public int Build { get; set; }
                 public int Revision { get; set; }
 
+                public PVersion() { }
+                public PVersion(int maj, int min, int bui, int rev)
+                {
+                    Major = maj; Minor = min; Build = bui; Revision = rev;
+                }
+
                 public int CompareTo(Version v)
                 {
                     return new Version(Major, Minor, Build, Revision)
@@ -39,6 +46,7 @@ namespace Piano_Player
             // ----------------------------
             /// <summary>Latest available version (4 digits separated by full stops).</summary>
             public PVersion LatestVersion { get; set; }
+            public string UpdateInstallerURL { get; set; }
             // ----------------------------
         }
         // =======================================================
@@ -46,7 +54,6 @@ namespace Piano_Player
         public const int FileVersion = 1;
         public const string FileExtension = "ppsf";
         public const string CAS_URL = "https://raw.githubusercontent.com/TheCSDev/piano-player/main/appSettings.dat";
-        public const string UpdateURL = "https://github.com/TheCSDev/piano-player/releases";
         public static string[] StartupArgs { get; private set; }
         // -------------------------------------------------------
         //CurrentAppSettings from URL
@@ -74,12 +81,7 @@ namespace Piano_Player
                     "installing an update.",
                     "Piano Player - Update", MessageBoxButton.YesNo);
 
-                if (mbr == MessageBoxResult.Yes)
-                {
-                    try { System.Diagnostics.Process.Start(UninstallerPath); } catch (Exception) { }
-                    try { System.Diagnostics.Process.Start(UpdateURL); } catch (Exception) { }
-                    Environment.Exit(0);
-                }
+                if (mbr == MessageBoxResult.Yes) Updater.RunUpdaterBAT();
             }
 
             //set up window
