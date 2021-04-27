@@ -45,83 +45,89 @@ namespace Piano_Player
 
         private void edit_timePerNote_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!App.IsStringANumber(edit_timePerNote.Text) || PianoPlayer == null)
-            {
+            if (PianoPlayer == null) return;
+
+            if (!App.IsStringANumber(edit_timePerNote.Text))
                 edit_timePerNote.Text = App.NumberOnlyString(edit_timePerNote.Text);
+
+            //it is important to return after updating text
+            //to prevent stack overflow
+            int i = int.Parse(edit_timePerNote.Text);
+            if (i < 10)
+            {
+                edit_timePerNote.Text = "10";
+                return;
+            }
+            else if (i > 10000)
+            {
+                edit_timePerNote.Text = "10000";
                 return;
             }
 
             try
             {
-                PianoPlayer.NoteTime = int.Parse(edit_timePerNote.Text);
+                PianoPlayer.NoteTime = i;
                 SheetSaveLoad.OnChangesMade();
             }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.NoteTime."); }
-
-            if (PianoPlayer.NoteTime < 10)
-            {
-                PianoPlayer.NoteTime = 10;
-                edit_timePerNote.Text = "10";
-            }
-            else if (PianoPlayer.NoteTime > 10000)
-            {
-                PianoPlayer.NoteTime = 10000;
-                edit_timePerNote.Text = "10000";
-            }
         }
 
         private void edit_timePerSpace_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!App.IsStringANumber(edit_timePerSpace.Text) || PianoPlayer == null)
-            {
+            if (PianoPlayer == null) return;
+
+            if (!App.IsStringANumber(edit_timePerSpace.Text))
                 edit_timePerSpace.Text = App.NumberOnlyString(edit_timePerSpace.Text);
+
+            //it is important to return after updating text
+            //to prevent stack overflow
+            int i = int.Parse(edit_timePerSpace.Text);
+            if (i < 10)
+            {
+                edit_timePerSpace.Text = "10";
+                return;
+            }
+            else if (i > 10000)
+            {
+                edit_timePerSpace.Text = "10000";
                 return;
             }
 
             try
             {
-                PianoPlayer.SpaceTime = int.Parse(edit_timePerSpace.Text);
+                PianoPlayer.SpaceTime = i;
                 SheetSaveLoad.OnChangesMade();
             }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.SpaceTime."); }
-
-            if (PianoPlayer.SpaceTime < 10)
-            {
-                PianoPlayer.SpaceTime = 10;
-                edit_timePerSpace.Text = "10";
-            }
-            else if (PianoPlayer.SpaceTime > 10000)
-            {
-                PianoPlayer.SpaceTime = 10000;
-                edit_timePerSpace.Text = "10000";
-            }
         }
 
         private void edit_timePerBreak_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!App.IsStringANumber(edit_timePerBreak.Text) || PianoPlayer == null)
-            {
+            if (PianoPlayer == null) return;
+
+            if (!App.IsStringANumber(edit_timePerBreak.Text))
                 edit_timePerBreak.Text = App.NumberOnlyString(edit_timePerBreak.Text);
+
+            //it is important to return after updating text
+            //to prevent stack overflow
+            int i = int.Parse(edit_timePerBreak.Text);
+            if (i < 10)
+            {
+                edit_timePerBreak.Text = "10";
+                return;
+            }
+            else if (i > 10000)
+            {
+                edit_timePerBreak.Text = "10000";
                 return;
             }
 
             try
             {
-                PianoPlayer.BreakTime = int.Parse(edit_timePerBreak.Text);
+                PianoPlayer.BreakTime = i;
                 SheetSaveLoad.OnChangesMade();
             }
             catch (Exception) { Console.WriteLine("> Parsing error while setting Player.BreakTime."); }
-
-            if (PianoPlayer.BreakTime < 10)
-            {
-                PianoPlayer.BreakTime = 10;
-                edit_timePerBreak.Text = "10";
-            }
-            else if (PianoPlayer.BreakTime > 10000)
-            {
-                PianoPlayer.BreakTime = 10000;
-                edit_timePerBreak.Text = "10000";
-            }
         }
 
         private void btn_playpause_Click(object sender, RoutedEventArgs e) { PianoPlayer.Player_Toggle(); }

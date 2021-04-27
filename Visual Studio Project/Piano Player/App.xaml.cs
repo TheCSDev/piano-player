@@ -108,6 +108,7 @@ namespace Piano_Player
         // =======================================================
         public static bool IsStringANumber(string text)
         {
+            if (text.Length == 0) return false;
             foreach (char ch in text) if (!char.IsDigit(ch)) return false;
             return true;
         }
