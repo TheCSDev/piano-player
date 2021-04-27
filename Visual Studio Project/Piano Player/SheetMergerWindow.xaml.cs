@@ -150,10 +150,12 @@ namespace Piano_Player
                         iTimeA += ppsA_tpb;
                         continue;
                     }
-                    else if(char.IsLetterOrDigit(ch)) 
+                    else if (char.IsLetterOrDigit(ch))
+                    {
                         timeline.Add(new MergerTimelineKey(iTimeA, ch));
+                        iTimeA += ppsA_tpn;
+                    }
                 }
-                iTimeA += ppsA_tpn;
             }
 
             int iTimeB = 0;
@@ -172,24 +174,38 @@ namespace Piano_Player
                         continue;
                     }
                     else if (char.IsLetterOrDigit(ch))
+                    {
                         timeline.Add(new MergerTimelineKey(iTimeB, ch));
+                        iTimeB += ppsB_tpn;
+                    }
                 }
-                iTimeB += ppsB_tpn;
             }
 
             //now all notes are aligned in a timeline
             //next up: sort the timeline and convert it back to PPSF
             timeline = timeline.OrderBy(i => i.Timestamp).ToList();
-            Console.WriteLine(JsonSerializer.Serialize(ppsA));
+
+            //convert the timeline back into a sheet
+            string finalSheet = "";
+            int lastTimestamp = 0;
+
+            string keyGroup = "";
+            foreach (MergerTimelineKey mtk in timeline)
+            {
+                keyGroup += mtk.NoteKey;
+                finalSheet += keyGroup; keyGroup = "";
+                finalSheet += "[" + Player.PlayerCommandPrefix + "w " + App.ClampInt(mtk.Timestamp - lastTimestamp - 10, 10, 10000) + "]";
+                lastTimestamp = mtk.Timestamp;
+            }
 
             //and finally, prepare the result
             PianoPlayerSheetFile ppsfR = new PianoPlayerSheetFile()
             {
                 FileVersion = 1,
-                TimePerNote = 150,
-                TimePerSpace = 150,
-                TimePerBreak = 400,
-                Sheets = new string[] { "" }
+                TimePerNote = 10,
+                TimePerSpace = 10,
+                TimePerBreak = 10,
+                Sheets = new string[] { finalSheet }
             };
 
             //and return the result

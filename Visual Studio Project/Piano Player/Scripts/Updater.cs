@@ -42,7 +42,10 @@ namespace Piano_Player.Scripts
             }
             catch (Exception e)
             {
-                ErrorWindow.ShowExceptionWindow("Unable to update the app.", e);
+                ErrorWindow.ShowExceptionWindow(
+                    "Unable to update the app.\n" +
+                    "Please try updaing the app manually by going " +
+                    "on it's official webpage and downloading an installer.", e);
                 return;
             }
 
