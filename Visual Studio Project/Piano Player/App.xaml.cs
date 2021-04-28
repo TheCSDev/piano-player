@@ -57,7 +57,11 @@ namespace Piano_Player
         public static string[] StartupArgs { get; private set; }
         // -------------------------------------------------------
         //CurrentAppSettings from URL
-        public static AppSettings CAS { get; private set; }
+        public static AppSettings CAS { get; private set; } = new AppSettings()
+        {
+            LatestVersion = new AppSettings.PVersion(1,2,0,0),
+            UpdateInstallerURL = null
+        }; //default app settings
         public static string JavaHelperPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/PianoPlayerHelper.jar";
         public static string UninstallerPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/unins000.exe";
         // =======================================================

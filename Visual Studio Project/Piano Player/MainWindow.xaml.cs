@@ -16,6 +16,7 @@ namespace Piano_Player
         // =======================================================
         public Player PianoPlayer { get; private set; }
         public SaveLoadSystem SheetSaveLoad { get; private set; }
+        private SheetMergerWindow SheetMergerWnd { get; set; }
         // =======================================================
         public MainWindow(string[] Args)
         {
@@ -171,9 +172,8 @@ namespace Piano_Player
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (PianoPlayer == null) return;
-
-            PianoPlayer.PlayerAlive = false;
+            if(PianoPlayer != null) PianoPlayer.PlayerAlive = false;
+            Environment.Exit(0);
         }
 
         private void menu_file_new_Click(object sender, RoutedEventArgs e) { SheetSaveLoad.NewFile(); }
@@ -189,7 +189,11 @@ namespace Piano_Player
         private void menu_tools_mergesheets_Click(object sender, RoutedEventArgs e)
         {
             PianoPlayer.Player_Pause();
-            new SheetMergerWindow(this).ShowDialog();
+            
+            if (SheetMergerWnd == null)
+                SheetMergerWnd = new SheetMergerWindow(this);
+
+            SheetMergerWnd.ShowDialog();
         }
         // =======================================================
         public void UpdateUI() 

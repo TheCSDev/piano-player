@@ -11,6 +11,9 @@ namespace Piano_Player.Scripts
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(App.CAS.UpdateInstallerURL))
+                    throw new Exception("No update URL is available.");
+
                 if (!Environment.OSVersion.ToString().ToLower().Contains("microsoft windows"))
                     throw new Exception("Unsupported operating system.");
 

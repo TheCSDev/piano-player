@@ -56,7 +56,7 @@ namespace Piano_Player
 
             try
             {
-                if (SaveFilePath == null || SaveFilePath.Length == 0) return SaveFileAs();
+                if (string.IsNullOrWhiteSpace(SaveFilePath)) return SaveFileAs();
 
                 PianoPlayerSheetFile ppsf = new PianoPlayerSheetFile();
                 ppsf.FileVersion = App.FileVersion;
@@ -113,26 +113,36 @@ namespace Piano_Player
                 PianoPlayerSheetFile ppsf = JsonSerializer.Deserialize
                     <PianoPlayerSheetFile>(File.ReadAllText(filePath));
 
-                if (ppsf.FileVersion != App.FileVersion)
-                    throw new Exception("This version of Piano Player is unable to " +
-                        "load ppsf files with file versions that aren't: " + App.FileVersion +
-                        "\nThe chosen file's version is: " + ppsf.FileVersion);
-
-                if(ppsf.Sheets != null && ppsf.Sheets.Length > 0)
-                    ParentWindow.edit_sheets.Text = ppsf.Sheets[0];
-                ParentWindow.edit_timePerNote.Text = "" + ppsf.TimePerNote;
-                ParentWindow.edit_timePerSpace.Text = "" + ppsf.TimePerSpace;
-                ParentWindow.edit_timePerBreak.Text = "" + ppsf.TimePerBreak;
-
-                SaveFilePath = filePath;
-                ChangesSaved = true;
-                return true;
+                if (LoadFile_EXC(ppsf))
+                {
+                    SaveFilePath = filePath;
+                    ChangesSaved = true;
+                    return true;
+                }
+                return false;
             }
             catch (Exception e)
             {
                 ErrorWindow.ShowExceptionWindow("Failed to open file: \"" + filePath + "\"", e);
                 return false;
             }
+        }
+        public bool LoadFile_EXC(PianoPlayerSheetFile ppsf)
+        {
+            if (ppsf.FileVersion != App.FileVersion)
+                throw new Exception("This version of Piano Player is unable to " +
+                    "load ppsf files with file versions that aren't: " + App.FileVersion +
+                    "\nThe chosen file's version is: " + ppsf.FileVersion);
+
+            if (ppsf.Sheets != null && ppsf.Sheets.Length > 0)
+                ParentWindow.edit_sheets.Text = ppsf.Sheets[0];
+            ParentWindow.edit_timePerNote.Text = "" + ppsf.TimePerNote;
+            ParentWindow.edit_timePerSpace.Text = "" + ppsf.TimePerSpace;
+            ParentWindow.edit_timePerBreak.Text = "" + ppsf.TimePerBreak;
+
+            SaveFilePath = null;
+            ChangesSaved = false;
+            return true;
         }
         // =======================================================
         public void OnChangesMade()
