@@ -18,7 +18,7 @@ set APP_UNINSTALLER_NAME=NULL
 set SETUP_FILE_URL=NULL
 
 rem 2. Constant variables
-set SETUP_FILE_NAME=PianoPlayer_Setup.exe
+set SETUP_FILE_NAME=NULL
 
 rem Wait a little bit before running the update
 timeout 1
@@ -39,28 +39,21 @@ goto loop1
 :loop2
 
 rem Execuute Windows Powershell and tell it to download the update file
+if exist "%SETUP_FILE_NAME%" (
+del "%userprofile%\Downloads\PianoPlayer_Setup.exe"
 if exist "%SETUP_FILE_NAME%" ( goto exit )
+)
+
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%SETUP_FILE_URL%', '%SETUP_FILE_NAME%')"
 timeout 1 /nobreak
 
 rem Execute the downloaded update file
-start PianoPlayer_Setup.exe
+explorer.exe /select,"%userprofile%\Downloads\PianoPlayer_Setup.exe"
+start "" %SETUP_FILE_NAME%
 
 rem | Exit the process, delete the installer if it was
 rem | downloaded and used and make the batch file delete itself
 rem | Also do not allow the loop to run indefinitely
 :exit
-
-set /A counter=0
-:loop3
-set /A counter=%counter%+1
-if %counter% gtr 420 ( exit )
-
-timeout 1
-if exist "%SETUP_FILE_NAME%" (
-del "%SETUP_FILE_NAME%" /q
-if exist "%SETUP_FILE_NAME%" goto loop3
-)
-
 start /b "" cmd /c del "%~f0"&exit /b
 exit
