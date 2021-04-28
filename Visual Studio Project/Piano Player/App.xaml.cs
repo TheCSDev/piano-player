@@ -21,6 +21,11 @@ namespace Piano_Player
             [Serializable]
             public class PVersion
             {
+                public static explicit operator Version(PVersion a)
+                {
+                    return new Version(a.Major, a.Minor, a.Build, a.Revision);
+                }
+
                 public int Major { get; set; }
                 public int Minor { get; set; }
                 public int Build { get; set; }
@@ -34,13 +39,11 @@ namespace Piano_Player
 
                 public int CompareTo(Version v)
                 {
-                    return new Version(Major, Minor, Build, Revision)
-                        .CompareTo(v);
+                    return ((Version)this).CompareTo(v);
                 }
                 public int CompareTo(PVersion v)
                 {
-                    return new Version(Major, Minor, Build, Revision)
-                        .CompareTo(new Version(v.Major, v.Minor, v.Build, v.Revision));
+                    return ((Version)this).CompareTo(((Version)v));
                 }
             }
             // ----------------------------
@@ -57,11 +60,7 @@ namespace Piano_Player
         public static string[] StartupArgs { get; private set; }
         // -------------------------------------------------------
         //CurrentAppSettings from URL
-        public static AppSettings CAS { get; private set; } = new AppSettings()
-        {
-            LatestVersion = new AppSettings.PVersion(1,2,0,0),
-            UpdateInstallerURL = null
-        }; //default app settings
+        public static AppSettings CAS { get; private set; }
         public static string JavaHelperPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/PianoPlayerHelper.jar";
         public static string UninstallerPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/unins000.exe";
         // =======================================================
