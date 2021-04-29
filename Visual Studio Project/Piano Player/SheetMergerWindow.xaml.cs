@@ -156,75 +156,54 @@ namespace Piano_Player
         public static PianoPlayerSheetFile MergePPSFs
         (PianoPlayerSheetFile ppsfA, PianoPlayerSheetFile ppsfB)
         {
-            //get sets of Player.Piano sheet instructions from both PPSFs
-            List<string> ppsA = ((Player.PianoSheet)ppsfA).RemainingKeys;
-            List<string> ppsB = ((Player.PianoSheet)ppsfB).RemainingKeys;
+            return MergePPSFs(new PianoPlayerSheetFile[] { ppsfA, ppsfB });
+        }
 
-            //get time delays for each PPSF
-            int ppsA_tpn = ppsfA.TimePerNote;  int ppsB_tpn = ppsfB.TimePerNote;
-            int ppsA_tps = ppsfA.TimePerSpace; int ppsB_tps = ppsfB.TimePerSpace;
-            int ppsA_tpb = ppsfA.TimePerBreak; int ppsB_tpb = ppsfB.TimePerBreak;
-
+        public static PianoPlayerSheetFile MergePPSFs(PianoPlayerSheetFile[] PPSFs)
+        {
             //create a new timeline where the notes will be aligned
             List<MergerTimelineKey> timeline = new List<MergerTimelineKey>();
-
-            //align notes from each PPSF to their timelines
-            int iTimeA = 0;
-            foreach (string iKeysA in ppsA)
+            
+            //align notes from each PPSFs to their timelines
+            foreach (PianoPlayerSheetFile ppsf in PPSFs)
             {
-                bool notesAdded = false;
+                //convert ppsf to piano player sheet
+                List<string> pps = ((Player.PianoSheet)ppsf).RemainingKeys;
 
-                foreach (char ch in iKeysA.ToCharArray())
+                //get time delays for the ppsf
+                int pps_tpn = ppsf.TimePerNote;
+                int pps_tps = ppsf.TimePerSpace;
+                int pps_tpb = ppsf.TimePerBreak;
+
+                //align notes from the ppsf to the timeline
+                int iTime = 0;
+                foreach (string iKeys in pps)
                 {
-                    if (iKeysA.Length == 1 && char.IsWhiteSpace(ch))
+                    bool notesAdded = false;
+
+                    foreach (char ch in iKeys.ToCharArray())
                     {
-                        iTimeA += ppsA_tps;
-                        continue;
+                        if (iKeys.Length == 1 && char.IsWhiteSpace(ch))
+                        {
+                            iTime += pps_tps;
+                            continue;
+                        }
+                        else if (iKeys.Length == 1 && ch == '|')
+                        {
+                            iTime += pps_tpb;
+                            continue;
+                        }
+                        else if (char.IsLetterOrDigit(ch))
+                        {
+                            MergerTimelineKey mtk = timeline.Find(i => i.Timestamp == iTime);
+                            if (mtk != null) mtk.NoteKeys += ch;
+                            else timeline.Add(new MergerTimelineKey(iTime, ch));
+                            notesAdded = true;
+                        }
                     }
-                    else if (iKeysA.Length == 1 && ch == '|')
-                    {
-                        iTimeA += ppsA_tpb;
-                        continue;
-                    }
-                    else if (char.IsLetterOrDigit(ch))
-                    {
-                        MergerTimelineKey mtk = timeline.Find(i => i.Timestamp == iTimeA);
-                        if (mtk != null) mtk.NoteKeys += ch;
-                        else timeline.Add(new MergerTimelineKey(iTimeA, ch));
-                        notesAdded = true;
-                    }
+
+                    if (notesAdded) iTime += pps_tpn;
                 }
-
-                if(notesAdded) iTimeA += ppsA_tpn;
-            }
-
-            int iTimeB = 0;
-            foreach (string iKeysB in ppsB)
-            {
-                bool notesAdded = false;
-
-                foreach (char ch in iKeysB.ToCharArray())
-                {
-                    if (iKeysB.Length == 1 && char.IsWhiteSpace(ch))
-                    {
-                        iTimeB += ppsB_tps;
-                        continue;
-                    }
-                    else if (iKeysB.Length == 1 && ch == '|')
-                    {
-                        iTimeB += ppsB_tpb;
-                        continue;
-                    }
-                    else if (char.IsLetterOrDigit(ch))
-                    {
-                        MergerTimelineKey mtk = timeline.Find(i => i.Timestamp == iTimeB);
-                        if (mtk != null) mtk.NoteKeys += ch;
-                        else timeline.Add(new MergerTimelineKey(iTimeB, ch));
-                        notesAdded = true;
-                    }
-                }
-
-                if (notesAdded) iTimeB += ppsB_tpn;
             }
 
             //now all notes are aligned in a timeline
