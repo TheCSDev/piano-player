@@ -5,6 +5,8 @@ namespace Piano_Player.Player
     public class TimelinePlayer
     {
         // =======================================================
+        public const char PlayerCommandPrefix = '_';
+        // =======================================================
         private readonly Thread PlayerThread;
         // -------------------------------------------------------
         public readonly MainWindow ParentWindow;
