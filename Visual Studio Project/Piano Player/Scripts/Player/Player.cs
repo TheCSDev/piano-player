@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using WindowsInput.Native;
+using Piano_Player.IO;
 
-namespace Piano_Player
+namespace Piano_Player.Player
 {
+    [Obsolete]
     public class Player
     {
         // =======================================================
@@ -47,10 +49,13 @@ namespace Piano_Player
                 while (Application.Current == null) { Thread.Sleep(100); }
                 while (PlayerAlive)
                 {
+                    //wait a little bit to prevend 1000s of commanands
+                    //being executed per second
+                    if (PausedLastFrame) { Thread.Sleep(250); }
+
                     //Check if the main window is in focus, and if it is,
                     //don't do anything.
-                    bool focus = IsMainWindowKeyboardFocused;
-                    if (focus) { PausedLastFrame = true; continue; }
+                    if (IsMainWindowKeyboardFocused) { PausedLastFrame = true; continue; }
 
                     //Also don't do anything if the player isn't playing
                     if (!ThisPlayer.IsPlaying) { PausedLastFrame = true;  continue; }
@@ -60,7 +65,7 @@ namespace Piano_Player
                     if (PausedLastFrame)
                     {
                         PausedLastFrame = false;
-                        Thread.Sleep(500);
+                        Thread.Sleep(250);
                     }
 
                     //Press the keys

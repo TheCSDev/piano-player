@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.Json;
 
-namespace Piano_Player
+namespace Piano_Player.IO
 {
     public class SaveLoadSystem
     {

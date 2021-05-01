@@ -4,7 +4,6 @@ using System.Net;
 using System.Windows;
 using System.Reflection;
 using System.Text.Json;
-using Piano_Player.Scripts;
 
 namespace Piano_Player
 {
@@ -84,7 +83,7 @@ namespace Piano_Player
                     "installing an update.",
                     "Piano Player - Update", MessageBoxButton.YesNo);
 
-                if (mbr == MessageBoxResult.Yes) Updater.RunUpdaterBAT();
+                if (mbr == MessageBoxResult.Yes) App.Updater.RunUpdaterBAT();
             }
 
             //set up window

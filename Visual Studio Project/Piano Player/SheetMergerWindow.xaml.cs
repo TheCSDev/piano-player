@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.Json;
+using Piano_Player.IO;
 
 namespace Piano_Player
 {
@@ -75,7 +77,7 @@ namespace Piano_Player
         {
             PianoPlayerSheetFile ppsfA = new PianoPlayerSheetFile()
             {
-                FileVersion = -1, //ignore this one
+                FileVersion = App.FileVersion,
                 TimePerNote = int.Parse(App.NumberOnlyString(edit_a_tpn.Text)),
                 TimePerSpace = int.Parse(App.NumberOnlyString(edit_a_tps.Text)),
                 TimePerBreak = int.Parse(App.NumberOnlyString(edit_a_tpb.Text)),
@@ -84,7 +86,7 @@ namespace Piano_Player
 
             PianoPlayerSheetFile ppsfB = new PianoPlayerSheetFile()
             {
-                FileVersion = -1, //ignore this one
+                FileVersion = App.FileVersion,
                 TimePerNote = int.Parse(App.NumberOnlyString(edit_b_tpn.Text)),
                 TimePerSpace = int.Parse(App.NumberOnlyString(edit_b_tps.Text)),
                 TimePerBreak = int.Parse(App.NumberOnlyString(edit_b_tpb.Text)),
@@ -140,8 +142,20 @@ namespace Piano_Player
             Hide();
         }
         // =======================================================
+        public PianoPlayerSheetFile GetMergedPPSF()
+        {
+            return new PianoPlayerSheetFile()
+            {
+                FileVersion = App.FileVersion,
+                TimePerNote = 10,
+                TimePerSpace = 10,
+                TimePerBreak = 10,
+                Sheets = new string[] { edit_merged_sheet.Text }
+            };
+        }
+        // =======================================================
         [Serializable]
-        private class MergerTimelineKey
+        public class MergerTimelineKey
         {
             public int Timestamp { get; set; } //ms
             public string NoteKeys { get; set; }
@@ -162,13 +176,23 @@ namespace Piano_Player
         public static PianoPlayerSheetFile MergePPSFs(PianoPlayerSheetFile[] PPSFs)
         {
             //create a new timeline where the notes will be aligned
+            List<MergerTimelineKey> timeline = PPSFsToTimeline(PPSFs);
+
+            //and return the result
+            return TimelineToPpsf(timeline);
+        }
+
+        public static List<MergerTimelineKey>PPSFsToTimeline
+        (PianoPlayerSheetFile[] PPSFs)
+        {
+            //create a new timeline where the notes will be aligned
             List<MergerTimelineKey> timeline = new List<MergerTimelineKey>();
-            
+
             //align notes from each PPSFs to their timelines
             foreach (PianoPlayerSheetFile ppsf in PPSFs)
             {
                 //convert ppsf to piano player sheet
-                List<string> pps = ((Player.PianoSheet)ppsf).RemainingKeys;
+                List<string> pps = ((Player.Player.PianoSheet)ppsf).RemainingKeys;
 
                 //get time delays for the ppsf
                 int pps_tpn = ppsf.TimePerNote;
@@ -202,7 +226,8 @@ namespace Piano_Player
                         }
                     }
 
-                    if (notesAdded) iTime += pps_tpn;
+                    //subtract 10 from tpn-s because of the 10ms delay
+                    if (notesAdded) iTime += pps_tpn - 10;
                 }
             }
 
@@ -210,47 +235,40 @@ namespace Piano_Player
             //next up: sort the timeline and convert it back to PPSF
             timeline = timeline.OrderBy(i => i.Timestamp).ToList();
 
+            return timeline;
+        }
+
+        public static PianoPlayerSheetFile TimelineToPpsf
+        (List<MergerTimelineKey> timeline)
+        {
             //convert timeline keys's timestamps to "wait numbers"
             if (timeline.Count > 1)
-            for (int index = timeline.Count - 1; index > 1; index--)
-            {
-                timeline[index].Timestamp -= timeline[index - 1].Timestamp;
-            }
+                for (int index = timeline.Count - 1; index > 1; index--)
+                {
+                    timeline[index].Timestamp -= timeline[index - 1].Timestamp;
+                }
 
             //convert the timeline back into a sheet
-            string finalSheet = "";
+            StringBuilder finalSheet = new StringBuilder();
 
             foreach (MergerTimelineKey mtk in timeline)
             {
                 if (mtk.Timestamp > 0)
-                    finalSheet += "["+Player.PlayerCommandPrefix+"w "+mtk.Timestamp+"]";
-                finalSheet += mtk.NoteKeys.Length == 1 ? mtk.NoteKeys : ("["+mtk.NoteKeys+"]");
+                    finalSheet.Append("[" + Player.Player.PlayerCommandPrefix + "w " + mtk.Timestamp + "]");
+                finalSheet.Append(mtk.NoteKeys.Length == 1 ? mtk.NoteKeys : ("[" + mtk.NoteKeys + "]"));
             }
 
             //and finally, prepare the result
             PianoPlayerSheetFile ppsfR = new PianoPlayerSheetFile()
             {
-                FileVersion = -1, //ignore this one
+                FileVersion = App.FileVersion,
                 TimePerNote = 10,
                 TimePerSpace = 10,
                 TimePerBreak = 10,
-                Sheets = new string[] { finalSheet }
+                Sheets = new string[] { finalSheet.ToString() }
             };
 
-            //and return the result
             return ppsfR;
-        }
-
-        public PianoPlayerSheetFile GetMergedPPSF()
-        {
-            return new PianoPlayerSheetFile()
-            {
-                FileVersion = 1,
-                TimePerNote = 10,
-                TimePerSpace = 10,
-                TimePerBreak = 10,
-                Sheets = new string[] { edit_merged_sheet.Text }
-            };
         }
         // =======================================================
     }

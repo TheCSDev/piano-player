@@ -3,15 +3,16 @@ using System.IO;
 using System.Diagnostics;
 using Syroot.Windows.IO;
 
-namespace Piano_Player.Scripts
+namespace Piano_Player.App
 {
+    [Obsolete]
     public static class Updater
     {
         public static void RunUpdaterBAT()
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(App.CAS.UpdateInstallerURL))
+                if (string.IsNullOrWhiteSpace(Piano_Player.App.CAS.UpdateInstallerURL))
                     throw new Exception("No update URL is available.");
 
                 if (!Environment.OSVersion.ToString().ToLower().Contains("microsoft windows"))
@@ -19,7 +20,7 @@ namespace Piano_Player.Scripts
 
                 string APP_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory;
                 string APP_UNINSTALLER_NAME = "unins000.exe";
-                string SETUP_FILE_URL = App.CAS.UpdateInstallerURL;
+                string SETUP_FILE_URL = Piano_Player.App.CAS.UpdateInstallerURL;
 
                 string SETUP_FILE_NAME = "PianoPlayer_Setup.exe";
 

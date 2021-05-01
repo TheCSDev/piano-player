@@ -6,8 +6,9 @@ using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Piano_Player
+namespace Piano_Player.Player
 {
+    [Obsolete]
     public class PlayerInputHandler
     {
         // ================================================

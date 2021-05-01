@@ -93,9 +93,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Scripts\PianoPlayerSheetFile.cs" />
-    <Compile Include="Scripts\SaveLoadSystem.cs" />
-    <Compile Include="Scripts\Updater.cs" />
+    <Compile Include="Scripts\IO\PianoPlayerSheetFile.cs" />
+    <Compile Include="Scripts\IO\SaveLoadSystem.cs" />
+    <Compile Include="Scripts\App\Updater.cs" />
+    <Compile Include="Scripts\Player\Timeline.cs" />
+    <Compile Include="Scripts\Player\TimelinePlayer.cs" />
     <Compile Include="SheetMergerWindow.xaml.cs">
       <DependentUpon>SheetMergerWindow.xaml</DependentUpon>
     </Compile>
@@ -114,7 +116,7 @@
     <Compile Include="ErrorWindow.xaml.cs">
       <DependentUpon>ErrorWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Scripts\PlayerInputHandler.cs" />
+    <Compile Include="Scripts\Player\PlayerInputHandler.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -125,7 +127,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Scripts\Player.cs" />
+    <Compile Include="Scripts\Player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -181,7 +183,10 @@
     <Resource Include="Images\icon_installer.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="PianoPlayer_Updater.txt" />
+    <Resource Include="Files\PianoPlayer_Updater.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Files\Notes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

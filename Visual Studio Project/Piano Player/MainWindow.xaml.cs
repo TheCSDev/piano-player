@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using Piano_Player.IO;
 
 namespace Piano_Player
 {
@@ -14,14 +15,14 @@ namespace Piano_Player
     public partial class MainWindow : Window
     {
         // =======================================================
-        public Player PianoPlayer { get; private set; }
+        public Player.Player PianoPlayer { get; private set; }
         public SaveLoadSystem SheetSaveLoad { get; private set; }
         private SheetMergerWindow SheetMergerWnd { get; set; }
         // =======================================================
         public MainWindow(string[] Args)
         {
             InitializeComponent();
-            PianoPlayer = new Player(this);
+            PianoPlayer = new Player.Player(this);
             SheetSaveLoad = new SaveLoadSystem(this);
 
             PianoPlayer.PlayStateChanged += UpdateUI;
@@ -40,7 +41,7 @@ namespace Piano_Player
         private void edit_sheets_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (PianoPlayer == null) return;
-            PianoPlayer.CurrentSheet = new Player.PianoSheet(edit_sheets.Text);
+            PianoPlayer.CurrentSheet = new Player.Player.PianoSheet(edit_sheets.Text);
             SheetSaveLoad.OnChangesMade();
         }
 
@@ -147,7 +148,7 @@ namespace Piano_Player
             PianoPlayer.NoteTime = 150;
             PianoPlayer.SpaceTime = 150;
             PianoPlayer.BreakTime = 400;
-            PianoPlayer.CurrentSheet = new Player.PianoSheet("");
+            PianoPlayer.CurrentSheet = new Player.Player.PianoSheet("");
         }
 
         private void Window_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

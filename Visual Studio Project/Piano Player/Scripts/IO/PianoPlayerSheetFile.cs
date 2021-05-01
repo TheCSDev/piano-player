@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Piano_Player
+namespace Piano_Player.IO
 {
     [Serializable]
     public class PianoPlayerSheetFile

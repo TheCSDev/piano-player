@@ -1,4 +1,6 @@
-﻿@echo off
+﻿rem THIS IS A TEMPLATE FILE OF THE UPDATER SCRIPT
+
+@echo off
 
 rem | It is important to run from downloads because
 rem | the batch script could run as admin (C://System32)
