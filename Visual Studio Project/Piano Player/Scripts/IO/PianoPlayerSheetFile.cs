@@ -6,11 +6,6 @@ namespace Piano_Player.IO
     public class PianoPlayerSheetFile
     {
         // =======================================================
-        /*public static explicit operator bool(PianoPlayerSheetFile a)
-        {
-            return a != null;
-        }*/
-        // =======================================================
         public int FileVersion { get; set; }
 
 

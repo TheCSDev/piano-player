@@ -6,19 +6,13 @@ namespace Piano_Player.Player
     public class TimelinePlayer
     {
         // =======================================================
-        public delegate void PlayStateChangedHandler();
-        public delegate void PlayerProgressChangedHandler();
-        // -------------------------------------------------------
         public const char PlayerCommandPrefix = '_';
         // =======================================================
-        public event PlayStateChangedHandler      PlayStateChanged;
-        public event PlayerProgressChangedHandler PlayerProgressChanged;
-
         public  readonly MainWindow         ParentWindow;
         private readonly Thread             PlayerThread;
         private readonly PlayerInputHandler InputHandler;
         // -------------------------------------------------------
-        public  Timeline           CurrentTimeline { get; private set; }
+        public Timeline CurrentTimeline { get; private set; }
         // -------------------------------------------------------
         public bool Playing { get; private set; }
         public int  Time    { get; set; } //ms
@@ -86,7 +80,6 @@ namespace Piano_Player.Player
             if (!PlayerThread.IsAlive) PlayerThread.Start();
             
             Playing = true;
-            PlayStateChanged();
         }
         public void Pause()
         {
@@ -95,7 +88,6 @@ namespace Piano_Player.Player
                 InputHandler.javaHelperProcess.Kill();
             
             Playing = false;
-            PlayStateChanged();
         }
         public void Stop()
         {
