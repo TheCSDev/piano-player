@@ -179,5 +179,9 @@
   <ItemGroup>
     <Resource Include="Files\Notes.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\btn_addSheet.png" />
+    <Resource Include="Images\btn_removeSheet.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

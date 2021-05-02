@@ -29,12 +29,19 @@
         </Menu>
 
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,0,0">
-            <TabItem x:Name="tab_player" Header="Player">
+            <TabItem Header="Player">
                 <Grid Background="#eeeeee">
-                    <Slider x:Name="slider_progress"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                            Margin="10,0,0,50" Height="20"
+
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          Margin="10,10,10,80"
+                          Background="#dddddd">
+                    </Grid>
+
+
+                    <Slider HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                            Margin="10,0,10,50" Height="20"
                             Minimum="0" Maximum="100" IsMoveToPointEnabled="True"/>
+
                     <Button HorizontalAlignment="Left" VerticalAlignment="Bottom"
                             Margin="10,0,0,10" Width="30" Height="30"
                             Background="{x:Null}" BorderBrush="{x:Null}">
@@ -47,8 +54,50 @@
                     </Button>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tab_editor" Header="Editor">
-                <Grid Background="#eeeeee"/>
+            <TabItem Header="Editor">
+                <Grid Background="#eeeeee">
+
+                    <Label HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Margin="0,10,10,0" Width="180" Height="25"
+                           Content="Starting time per note:"/>
+                    <TextBox HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Margin="0,35,10,0" Width="180" Height="20"
+                           Text="150"/>
+                    <Label HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Margin="0,55,10,0" Width="180" Height="25"
+                           Content="Starting time per space:"/>
+                    <TextBox HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Margin="0,80,10,0" Width="180" Height="20"
+                           Text="150"/>
+                    <Label HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Margin="0,100,10,0" Width="180" Height="25"
+                           Content="Starting time per break:"/>
+                    <TextBox HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Margin="0,125,10,0" Width="180" Height="20"
+                           Text="400"/>
+
+                    <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Margin="10,10,200,50">
+                        <TabItem Header="Sheet 1">
+                            <TextBox Padding="5,5,5,5" TextWrapping="NoWrap"
+                                     AcceptsReturn="True" AcceptsTab="False"
+                                     UndoLimit="30" FontFamily="Courier New"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                        </TabItem>
+                    </TabControl>
+
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                            Margin="10,0,0,10" Width="30" Height="30"
+                            Background="{x:Null}" BorderBrush="{x:Null}">
+                        <Image Source="Images/btn_addSheet.png"/>
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                            Margin="50,0,0,10" Width="30" Height="30"
+                            Background="{x:Null}" BorderBrush="{x:Null}">
+                        <Image Source="Images/btn_removeSheet.png"/>
+                    </Button>
+                </Grid>
             </TabItem>
         </TabControl>
 
