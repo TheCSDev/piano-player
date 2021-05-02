@@ -83,7 +83,7 @@ namespace Piano_Player
                     "installing an update.",
                     "Piano Player - Update", MessageBoxButton.YesNo);
 
-                if (mbr == MessageBoxResult.Yes) App.Updater.RunUpdaterBAT();
+                if (mbr == MessageBoxResult.Yes) Updater.RunUpdaterBAT();
             }
 
             //set up window

@@ -1,16 +1,24 @@
 ﻿using System.Threading;
+using WindowsInput.Native;
 
 namespace Piano_Player.Player
 {
     public class TimelinePlayer
     {
         // =======================================================
+        public delegate void PlayStateChangedHandler();
+        public delegate void PlayerProgressChangedHandler();
+        // -------------------------------------------------------
         public const char PlayerCommandPrefix = '_';
         // =======================================================
-        private readonly Thread PlayerThread;
+        public event PlayStateChangedHandler      PlayStateChanged;
+        public event PlayerProgressChangedHandler PlayerProgressChanged;
+
+        public  readonly MainWindow         ParentWindow;
+        private readonly Thread             PlayerThread;
+        private readonly PlayerInputHandler InputHandler;
         // -------------------------------------------------------
-        public readonly MainWindow ParentWindow;
-        public Timeline CurrentTimeline { get; private set; }
+        public  Timeline           CurrentTimeline { get; private set; }
         // -------------------------------------------------------
         public bool Playing { get; private set; }
         public int  Time    { get; set; } //ms
@@ -19,11 +27,13 @@ namespace Piano_Player.Player
         {
             ParentWindow    = parentWindow;
             CurrentTimeline = new Timeline();
+            InputHandler    = new PlayerInputHandler(this);
+
+            PlayerThread = new Thread(() => { PlayerThreadM(this); });
+            PlayerThread.IsBackground = true;
+            
             Playing         = false;
             Time            = 0;
-
-            PlayerThread = new Thread(() => { PlayerThreadM(this); })
-            { IsBackground = true };
         }
         // =======================================================
         private static void PlayerThreadM(TimelinePlayer player)
@@ -51,12 +61,48 @@ namespace Piano_Player.Player
 
         private void KeyPress(char ch)
         {
+            if (!Timeline.ChValid(ch)) return;
 
+            if (char.IsLetter(ch))
+            {
+                if (char.IsUpper(ch)) InputHandler.KeyDown(VirtualKeyCode.LSHIFT);
+                InputHandler.KeyPress((VirtualKeyCode)char.ToUpper(ch));
+                if (char.IsUpper(ch)) InputHandler.KeyUp(VirtualKeyCode.LSHIFT);
+            }
+            else if(Timeline.NumberShiftCharacters.Contains(ch.ToString()))
+            {
+                InputHandler.KeyDown(VirtualKeyCode.LSHIFT);
+                //and this is why NumberShiftCharacters character order is important
+                InputHandler.KeyPress((VirtualKeyCode)
+                    Timeline.NumberShiftCharacters.IndexOf(ch.ToString()));
+                InputHandler.KeyUp(VirtualKeyCode.LSHIFT);
+            }
         }
         // -------------------------------------------------------
-        public void Play() { Playing = true; if (!PlayerThread.IsAlive) PlayerThread.Start(); }
-        public void Pause() { Playing = false; }
-        public void Stop() {  Playing = false; Time = -1; PlayerThread.Abort(); }
+        public void Play()
+        {
+            InputHandler.RefreshData();
+            InputHandler.DebugPlayerHelper();
+            if (!PlayerThread.IsAlive) PlayerThread.Start();
+            
+            Playing = true;
+            PlayStateChanged();
+        }
+        public void Pause()
+        {
+            if (InputHandler.javaHelperProcess != null &&
+                !InputHandler.javaHelperProcess.HasExited)
+                InputHandler.javaHelperProcess.Kill();
+            
+            Playing = false;
+            PlayStateChanged();
+        }
+        public void Stop()
+        {
+            Pause();
+            Time = -1;
+            PlayerThread.Abort();
+        }
         public void ToglePlayPause() { if (Playing) Pause(); else Play(); }
         // =======================================================
     }

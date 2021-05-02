@@ -15,23 +15,18 @@ namespace Piano_Player
     public partial class MainWindow : Window
     {
         // =======================================================
-        public Player.Player PianoPlayer { get; private set; }
+        public Player.TimelinePlayer PianoPlayer { get; private set; }
         public SaveLoadSystem SheetSaveLoad { get; private set; }
         private SheetMergerWindow SheetMergerWnd { get; set; }
         // =======================================================
         public MainWindow(string[] Args)
         {
             InitializeComponent();
-            PianoPlayer = new Player.Player(this);
+            PianoPlayer = new Player.TimelinePlayer(this);
             SheetSaveLoad = new SaveLoadSystem(this);
 
             PianoPlayer.PlayStateChanged += UpdateUI;
             PianoPlayer.PlayerProgressChanged += UpdateUI;
-
-            edit_timePerNote.Text = "" + PianoPlayer.NoteTime;
-            edit_timePerSpace.Text = "" + PianoPlayer.SpaceTime;
-            edit_timePerBreak.Text = "" + PianoPlayer.BreakTime;
-            edit_sheets.Text = PianoPlayer.CurrentSheet.RawSheet;
 
             SheetSaveLoad.ChangesSaved = true;
             if (Args.Length > 0 && Args[0].EndsWith(App.FileExtension) && File.Exists(Args[0]))

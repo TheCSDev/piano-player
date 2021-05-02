@@ -8,8 +8,10 @@ namespace Piano_Player.Player
     public class Timeline
     {
         // =======================================================
-        public const string ValidNoteCharacters = "1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(";
-
+        public const string ValidNoteCharacters   = "1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(";
+        //warning: special character order is very important (SHIFT+(1 to 9))
+        public const string NumberShiftCharacters = "!@#$%^&*()";
+        
         public class Keyframe
         {
             private int _timestamp; //ms
@@ -148,52 +150,59 @@ namespace Piano_Player.Player
             //convert those arrays of instructions into a timeline and keyframes
             foreach (List<string> instruction in instructions)
             {
-                int tpn = ppsf.TimePerNote,
-                    tps = ppsf.TimePerSpace,
-                    tpb = ppsf.TimePerBreak;
-                int timestamp = 0;
-
-                foreach (string action in instruction)
-                {
-                    //handling action commands
-                    if (action.StartsWith(""+TimelinePlayer.PlayerCommandPrefix))
-                    {
-                        if (action.Substring(1).StartsWith("w"))
-                        {
-                            int i = 0;
-                            try { i = int.Parse(action.Substring(3)); }
-                            catch (Exception) { }
-                            timestamp += i;
-                            continue;
-                        }
-                    }
-                    //handling other actions
-                    else
-                    {
-                        bool actionContainedNotes = false;
-
-                        //handle each key in action
-                        foreach (char ch in action)
-                        {
-                            if (ChValid(ch))
-                            {
-                                actionContainedNotes = true;
-                                Keyframe keyframe = new Keyframe(timestamp, ch);
-                                result.AddKeyframe(keyframe);
-                            }
-                            else if (ch == ' ' && !actionContainedNotes)
-                                timestamp += tps;
-                            else if (ch == '|' && !actionContainedNotes)
-                                timestamp += tpb;
-                        }
-
-                        if (actionContainedNotes) timestamp += tpn;
-                    }
-                }
+                AddInstructionsToTimeline(instruction, ref result,
+                    ppsf.TimePerNote, ppsf.TimePerSpace, ppsf.TimePerBreak);
             }
 
             //finally, return the result
             return result;
+        }
+
+        public static void AddInstructionsToTimeline
+        (List<string> instructions, ref Timeline timeline,
+        int ppsf_tpn, int ppsf_tps, int ppsf_tpb)
+        {
+            //convert those arrays of instructions into a timeline and keyframes
+            int tpn = ppsf_tpn, tps = ppsf_tps, tpb = ppsf_tpb;
+            int timestamp = 0;
+
+            foreach (string action in instructions)
+            {
+                //handling action commands
+                if (action.StartsWith("" + TimelinePlayer.PlayerCommandPrefix))
+                {
+                    if (action.Substring(1).StartsWith("w"))
+                    {
+                        int i = 0;
+                        try { i = int.Parse(action.Substring(3)); }
+                        catch (Exception) { }
+                        timestamp += i;
+                        continue;
+                    }
+                }
+                //handling other actions
+                else
+                {
+                    bool actionContainedNotes = false;
+
+                    //handle each key in action
+                    foreach (char ch in action)
+                    {
+                        if (ChValid(ch))
+                        {
+                            actionContainedNotes = true;
+                            Keyframe keyframe = new Keyframe(timestamp, ch);
+                            timeline.AddKeyframe(keyframe);
+                        }
+                        else if (ch == ' ' && !actionContainedNotes)
+                            timestamp += tps;
+                        else if (ch == '|' && !actionContainedNotes)
+                            timestamp += tpb;
+                    }
+
+                    if (actionContainedNotes) timestamp += tpn;
+                }
+            }
         }
 
         public static List<string> SheetToInstructions(string input_sheet)

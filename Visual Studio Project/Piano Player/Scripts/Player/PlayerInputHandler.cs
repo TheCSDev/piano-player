@@ -8,11 +8,10 @@ using WindowsInput.Native;
 
 namespace Piano_Player.Player
 {
-    [Obsolete]
     public class PlayerInputHandler
     {
         // ================================================
-        public Player parentPlayer { get; private set; }
+        public TimelinePlayer parentPlayer { get; private set; }
         public InputSimulator inputSimulator { get; private set; }
         public bool isJavaInstalled { get; private set; }
         public bool canUseJavaHelper { get; private set; }
@@ -20,7 +19,7 @@ namespace Piano_Player.Player
         //Java helper variables
         public Process javaHelperProcess { get; private set; }
         // ================================================
-        public PlayerInputHandler(Player parentPlayer)
+        public PlayerInputHandler(TimelinePlayer parentPlayer)
         {
             this.parentPlayer = parentPlayer;
             inputSimulator = new InputSimulator();
@@ -98,12 +97,12 @@ namespace Piano_Player.Player
         {
             //return if helper cannot be used
             if (!canUseJavaHelper || javaHelperProcess == null) return;
-            if (javaHelperProcess.HasExited && !parentPlayer.IsPlaying) return;
+            if (javaHelperProcess.HasExited && !parentPlayer.Playing) return;
 
             //catch and handle an error should it ever occur
-            if (javaHelperProcess.HasExited && parentPlayer.IsPlaying)
+            if (javaHelperProcess.HasExited && parentPlayer.Playing)
             {
-                parentPlayer.Player_Pause();
+                parentPlayer.Pause();
                 MessageBox.Show("The PianoPlayerHelper.jar Process " +
                     "has unexpectedly crashed.\n\n" +
                     GetProcessLogOuput(javaHelperProcess), "Piano Player",
@@ -151,9 +150,10 @@ namespace Piano_Player.Player
                     "and that there are no other issues with Java.", proc);
 
                 //close the player window
-                parentPlayer.parentWindow.Close();
-                //kill the player thread
-                parentPlayer.PlayerAlive = false;
+                parentPlayer.ParentWindow.Close();
+
+                //kill the player thread (by stopping the player)
+                parentPlayer.Stop();
             }
 
             //if everything is alright, start the helper (kill the previous one first)

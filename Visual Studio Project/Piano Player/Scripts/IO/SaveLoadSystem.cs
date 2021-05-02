@@ -52,7 +52,7 @@ namespace Piano_Player.IO
         }
         public bool SaveFile()
         {
-            ParentWindow.PianoPlayer.Player_Pause();
+            ParentWindow.PianoPlayer.Pause();
 
             try
             {
@@ -79,7 +79,7 @@ namespace Piano_Player.IO
         }
         public bool SaveFileAs()
         {
-            ParentWindow.PianoPlayer.Player_Pause();
+            ParentWindow.PianoPlayer.Pause();
 
             try
             {
@@ -105,7 +105,7 @@ namespace Piano_Player.IO
         }
         public bool LoadFile(string filePath)
         {
-            ParentWindow.PianoPlayer.Player_Pause();
+            ParentWindow.PianoPlayer.Pause();
 
             if (!filePath.EndsWith(App.FileExtension) || !File.Exists(filePath)) return false;
             try
@@ -147,7 +147,7 @@ namespace Piano_Player.IO
         // =======================================================
         public void OnChangesMade()
         {
-            ParentWindow.PianoPlayer.Player_Pause();
+            ParentWindow.PianoPlayer.Pause();
             ChangesSaved = false;
         }
 

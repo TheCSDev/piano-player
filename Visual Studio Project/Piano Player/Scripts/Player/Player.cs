@@ -112,7 +112,7 @@ namespace Piano_Player.Player
                                     inputHandler.KeyPress((VirtualKeyCode)char.ToUpper(ch));
 
                                     if (char.IsUpper(ch))
-                                        inputHandler.KeyUp(WindowsInput.Native.VirtualKeyCode.LSHIFT);
+                                        inputHandler.KeyUp(VirtualKeyCode.LSHIFT);
                                 }
                             }
 

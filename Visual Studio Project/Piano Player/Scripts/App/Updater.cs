@@ -3,9 +3,8 @@ using System.IO;
 using System.Diagnostics;
 using Syroot.Windows.IO;
 
-namespace Piano_Player.App
+namespace Piano_Player
 {
-    [Obsolete]
     public static class Updater
     {
         public static void RunUpdaterBAT()
