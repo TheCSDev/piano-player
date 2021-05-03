@@ -92,41 +92,40 @@ namespace Piano_Player.Player
 
             if (KeyframeCount == 0) return;
 
-            Keyframe /*closestSmaller = null,*/ closestBigger = null;
+            Keyframe closestBigger = null;
             string keysToPress = "";
 
             foreach (Keyframe keyframe in Keyframes)
             {
-                /*if ((closestSmaller == null && keyframe.Timestamp < timestamp) ||
-                  (keyframe.Timestamp > closestSmaller.Timestamp && keyframe.Timestamp < timestamp))
-                    closestSmaller = keyframe;
+                if (closestBigger == null && keyframe.Timestamp > timestamp)
+                    closestBigger = keyframe;
 
-                else*/ if ((closestBigger == null && keyframe.Timestamp > timestamp) ||
-                  (keyframe.Timestamp < closestBigger.Timestamp && keyframe.Timestamp > timestamp))
+                else if (closestBigger != null &&
+                    keyframe.Timestamp < closestBigger.Timestamp &&
+                    keyframe.Timestamp > timestamp)
                     closestBigger = keyframe;
 
                 if (keyframe.Timestamp == timestamp && ChValid(keyframe.NoteKey))
                     keysToPress += keyframe.NoteKey;
+            }
 
-
-                if (keysToPress.Length > 0)
-                {
-                    playerAction = PlayerAction.KeyPress;
-                    args = new string[] { keysToPress };
-                    return;
-                }
-                else if (keysToPress.Length == 0 && closestBigger != null)
-                {
-                    playerAction = PlayerAction.Sleep;
-                    args = new string[] { "" + (closestBigger.Timestamp - timestamp) };
-                    return;
-                }
-                else if (closestBigger == null)
-                {
-                    playerAction = PlayerAction.Stop;
-                    args = null;
-                    return;
-                }
+            if (keysToPress.Length > 0)
+            {
+                playerAction = PlayerAction.KeyPress;
+                args = new string[] { keysToPress };
+                return;
+            }
+            else if (keysToPress.Length == 0 && closestBigger != null)
+            {
+                playerAction = PlayerAction.Sleep;
+                args = new string[] { "" + (closestBigger.Timestamp - timestamp) };
+                return;
+            }
+            else if (closestBigger == null)
+            {
+                playerAction = PlayerAction.Stop;
+                args = null;
+                return;
             }
         }
         // -------------------------------------------------------
@@ -264,6 +263,16 @@ namespace Piano_Player.Player
 
             //return the instructions
             return FullSheet;
+        }
+        // =======================================================
+        public override string ToString()
+        {
+            string s = "";
+            foreach (Keyframe key in Keyframes)
+            {
+                s += key.NoteKey + "," + key.Timestamp + "|";
+            }
+            return s;
         }
         // =======================================================
     }

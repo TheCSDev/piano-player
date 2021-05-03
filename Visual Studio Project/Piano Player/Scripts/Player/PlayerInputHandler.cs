@@ -61,7 +61,7 @@ namespace Piano_Player.Player
         //
         public void RefreshData()
         {
-            isJavaInstalled = App.Where("java.exe") != null;
+            isJavaInstalled = QM.Where("java.exe") != null;
             canUseJavaHelper = isJavaInstalled && File.Exists(App.JavaHelperPath);
         }
         // ================================================
@@ -124,8 +124,10 @@ namespace Piano_Player.Player
         /// the player from running and once the pop-up is closed, the player app
         /// exits as well.
         /// </summary>
-        public void DebugPlayerHelper()
+        public void StartPlayerHelper()
         {
+            RefreshData();
+
             //if the Java helper cannot be used, ignre this method
             if (!canUseJavaHelper) return;
 
@@ -149,24 +151,27 @@ namespace Piano_Player.Player
                     "PianoPlayerHelper (Java).\nMake sure your Java is up to date " +
                     "and that there are no other issues with Java.", proc);
 
+                //kill the player thread (by stopping the player)
+                parentPlayer.AbortPlayer();
+
                 //close the player window
                 parentPlayer.ParentWindow.Close();
-
-                //kill the player thread (by stopping the player)
-                parentPlayer.Stop();
+                Environment.Exit(-1);
             }
 
             //if everything is alright, start the helper (kill the previous one first)
             if (javaHelperProcess != null && !javaHelperProcess.HasExited) javaHelperProcess.Kill();
 
-            javaHelperProcess = new Process();
-            javaHelperProcess.StartInfo.UseShellExecute = false;
-            javaHelperProcess.StartInfo.FileName = "javaw";
-            javaHelperProcess.StartInfo.Arguments = "-jar \"" + App.JavaHelperPath + "\" \"" + "start-helper" + "\"";
-            javaHelperProcess.StartInfo.RedirectStandardInput = true;
-            javaHelperProcess.StartInfo.RedirectStandardOutput = true;
-            javaHelperProcess.StartInfo.RedirectStandardError = true;
-            javaHelperProcess.Start();
+            Process proc2 = new Process();
+            proc2.StartInfo.UseShellExecute = false;
+            proc2.StartInfo.FileName = "javaw";
+            proc2.StartInfo.Arguments = "-jar \"" + App.JavaHelperPath + "\" \"" + "start-helper" + "\"";
+            proc2.StartInfo.RedirectStandardInput = true;
+            proc2.StartInfo.RedirectStandardOutput = true;
+            proc2.StartInfo.RedirectStandardError = true;
+            proc2.Start();
+            //avoid concurrent modification by assigning it after running it
+            javaHelperProcess = proc2;
         }
 
         public void ShowHelperErrorWindow(string message, Process proc)
@@ -182,7 +187,8 @@ namespace Piano_Player.Player
             errorWindow.edit_text.Text = message;
             errorWindow.ShowDialog();
         }
-        public static String GetProcessLogOuput(Process proc)
+        
+        public static string GetProcessLogOuput(Process proc)
         {
             string message = "";
             string s_out = "", e_out = "";

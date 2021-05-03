@@ -89,6 +89,8 @@ namespace Piano_Player
             //set up window
             MainWindow wnd = new MainWindow(e.Args);
             wnd.Show();
+
+            //TODO - IF ARGS HAS A PATH TO A PPSF FILE, LOAD IT
         }
         // -------------------------------------------------------
         /// <summary>
@@ -106,44 +108,6 @@ namespace Piano_Player
             }
             catch (Exception) { /*grab unsuccessful*/ }
             client.Dispose();
-        }
-        // =======================================================
-        public static bool IsStringANumber(string text)
-        {
-            if (text.Length == 0) return false;
-            foreach (char ch in text) if (!char.IsDigit(ch)) return false;
-            return true;
-        }
-        // -------------------------------------------------------
-        public static string NumberOnlyString(string input)
-        {
-            string result = "";
-            foreach (char ch in input) if (char.IsDigit(ch)) result += ch;
-            if (result.Length == 0) result = "0";
-            return result;
-        }
-        // -------------------------------------------------------
-        //og. src: https://stackoverflow.com/questions/22210758/equivalent-of-where-command-prompt-command-in-c-sharp
-        public static string Where(string filename)
-        {
-            var path = Environment.GetEnvironmentVariable("PATH");
-            var directories = path.Split(';');
-
-            foreach (var dir in directories)
-            {
-                var fullpath = Path.Combine(dir, filename);
-                if (File.Exists(fullpath)) return fullpath;
-            }
-
-            // filename does not exist in path
-            return null;
-        }
-        // -------------------------------------------------------
-        public static int ClampInt(int input, int min, int max)
-        {
-            if (input < min) input = min;
-            else if (input > max) input = max;
-            return input;
         }
         // =======================================================
     }

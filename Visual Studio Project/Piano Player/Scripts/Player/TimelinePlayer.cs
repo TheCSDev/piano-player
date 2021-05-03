@@ -7,24 +7,45 @@ namespace Piano_Player.Player
     {
         // =======================================================
         public const char PlayerCommandPrefix = '_';
+
+        public delegate void PlayStateChangedHandler();
         // =======================================================
         public  readonly MainWindow         ParentWindow;
-        private readonly Thread             PlayerThread;
         private readonly PlayerInputHandler InputHandler;
+        private readonly Thread             PlayerThread;
+
+        public PlayStateChangedHandler PlayStateChanged;
         // -------------------------------------------------------
-        public Timeline CurrentTimeline { get; private set; }
+        private Timeline _currentTimeline = new Timeline();
+        public Timeline CurrentTimeline
+        {
+            get { return _currentTimeline; }
+            set { if (value != null) _currentTimeline = value; }
+        }
         // -------------------------------------------------------
-        public bool Playing { get; private set; }
-        public int  Time    { get; set; } //ms
+        private bool _playing = false;
+        public  bool Playing
+        {
+            get { return _playing; }
+            private set
+            {
+                bool trigger = false;
+                if (_playing != value) trigger = true;
+                _playing = value;
+                if (trigger) PlayStateChanged();
+            }
+        }
+        public  int  Time { get; set; } //ms
         // =======================================================
         public TimelinePlayer(MainWindow parentWindow)
         {
             ParentWindow    = parentWindow;
-            CurrentTimeline = new Timeline();
             InputHandler    = new PlayerInputHandler(this);
-
             PlayerThread = new Thread(() => { PlayerThreadM(this); });
-            PlayerThread.IsBackground = true;
+            PlayerThread.IsBackground = false;
+            PlayerThread.Start();
+
+            //CurrentTimeline = new Timeline();
             
             Playing         = false;
             Time            = 0;
@@ -32,25 +53,42 @@ namespace Piano_Player.Player
         // =======================================================
         private static void PlayerThreadM(TimelinePlayer player)
         {
-            while (true)
+            try
             {
-                Thread.Sleep(1);
-                if (!player.Playing) break;
-                player.Time++;
+                bool continuedLastFrame = false;
 
-                Timeline.PlayerAction action;
-                string[] args;
-                player.CurrentTimeline.GetPlayerAction(player.Time, out action, out args);
-
-                switch (action)
+                while (true)
                 {
-                    case Timeline.PlayerAction.KeyPress:
-                        foreach (char ch in args[0].ToCharArray()) player.KeyPress(ch);
-                        break;
-                    case Timeline.PlayerAction.Sleep: continue;
-                    case Timeline.PlayerAction.Stop: player.Stop(); break;
+                    if (!player.Playing || QM.ApplicationIsActivated())
+                    {
+                        Thread.Sleep(500);
+                        continuedLastFrame = true;
+                        continue;
+                    }
+
+                    if (continuedLastFrame)
+                    {
+                        Thread.Sleep(1000);
+                        continuedLastFrame = false;
+                    }
+
+                    Thread.Sleep(1);
+                    player.Time++;
+
+                    Timeline.PlayerAction action;
+                    string[] args;
+                    player.CurrentTimeline.GetPlayerAction(player.Time, out action, out args);
+
+                    if (action == Timeline.PlayerAction.KeyPress)
+                        foreach (char ch in args[0].ToCharArray())
+                            player.KeyPress(ch);
+                    else if (action == Timeline.PlayerAction.Sleep)
+                        continue;
+                    else if (action == Timeline.PlayerAction.Stop)
+                        player.Stop();
                 }
             }
+            catch (ThreadAbortException) { player.Playing = false; }
         }
 
         private void KeyPress(char ch)
@@ -75,27 +113,34 @@ namespace Piano_Player.Player
         // -------------------------------------------------------
         public void Play()
         {
-            InputHandler.RefreshData();
-            InputHandler.DebugPlayerHelper();
-            if (!PlayerThread.IsAlive) PlayerThread.Start();
-            
+            if (Playing) return;
+
+            InputHandler.StartPlayerHelper();
+
             Playing = true;
         }
         public void Pause()
         {
+            if (!Playing) return;
+
             if (InputHandler.javaHelperProcess != null &&
                 !InputHandler.javaHelperProcess.HasExited)
                 InputHandler.javaHelperProcess.Kill();
-            
+
             Playing = false;
         }
         public void Stop()
         {
             Pause();
             Time = -1;
-            PlayerThread.Abort();
         }
         public void ToglePlayPause() { if (Playing) Pause(); else Play(); }
+        public void AbortPlayer()
+        {
+            try { Stop(); } catch (System.Exception) { }
+            try { PlayerThread.Abort(); } catch (System.Exception) { }
+            try { ParentWindow.IsEnabled = false; } catch (System.Exception) { }
+        }
         // =======================================================
     }
 }

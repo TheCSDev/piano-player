@@ -97,6 +97,7 @@
     <Compile Include="Scripts\App\Updater.cs" />
     <Compile Include="Scripts\Player\Timeline.cs" />
     <Compile Include="Scripts\Player\TimelinePlayer.cs" />
+    <Compile Include="Scripts\QM.cs" />
     <Page Include="ErrorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
