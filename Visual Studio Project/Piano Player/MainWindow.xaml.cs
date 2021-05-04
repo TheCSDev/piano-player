@@ -39,12 +39,10 @@ namespace Piano_Player
                     {
                         tabs.SelectedItem = tabs.Items[0];
                         ((TabItem)tabs.Items[1]).IsEnabled = false;
-                        slider_progress.IsEnabled = false;
                     }
                     else
                     {
                         ((TabItem)tabs.Items[1]).IsEnabled = true;
-                        slider_progress.IsEnabled = true;
                     }
                 });
             };
@@ -133,15 +131,18 @@ namespace Piano_Player
             e.Handled = true;
         }
         // -----------------
+        private bool slider_progress_updating = false;
         private void slider_progress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            UpdateUI_label_time();
-            
-            if (!PianoPlayer.Playing)
+            //only run the code inside of the if statement if the
+            //user is updating the value
+            if (!slider_progress_updating)
+            {
+                PianoPlayer.Pause();
                 PianoPlayer.Time = (int)slider_progress.Value;
-            else
-                UpdateUI_slider_progress();
+            }
             
+            UpdateUI_label_time();
             e.Handled = true;
         }
         // -----------------
@@ -281,6 +282,17 @@ namespace Piano_Player
             if (tabs_sheets.Items.Count == 0) return;
 
             tabs_sheets.Items.Remove(tabs_sheets.SelectedItem);
+
+            int count = 1;
+            foreach (DependencyObject obj in tabs_sheets.Items)
+            {
+                if (obj is TabItem)
+                {
+                    ((TabItem)obj).Header = "Sheet " + count;
+                    count++;
+                }
+            }
+
             SaveLoadSystem.ChangesSaved = false;
         }
         // -------------------------------------------------------
@@ -308,9 +320,13 @@ namespace Piano_Player
             if (Application.Current != null)
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+                    slider_progress_updating = true;
+
                     slider_progress.Minimum = 0;
                     slider_progress.Maximum = PianoPlayer.CurrentTimeline.TimeLength;
                     slider_progress.Value = PianoPlayer.Time;
+
+                    slider_progress_updating = false;
                 });
         }
 
