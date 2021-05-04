@@ -154,7 +154,8 @@ namespace Piano_Player.Player
 
         private void KeyPress(char ch)
         {
-            if (!Timeline.ChValid(ch)) return;
+            if (!Timeline.ChValid(ch) || InputHandler.KeysPressedBeforePing
+                >= PlayerInputHandler.KeyLimitPerPing) return;
 
             if (char.IsLetter(ch))
             {
@@ -199,8 +200,22 @@ namespace Piano_Player.Player
         public void AbortPlayer()
         {
             try { Stop(); } catch (System.Exception) { }
-            try { PlayerThread.Abort(); } catch (System.Exception) { }
-            try { ParentWindow.IsEnabled = false; } catch (System.Exception) { }
+            try
+            {
+                //first the thread
+                if(PlayerThread != null) PlayerThread.Abort();
+                //and then the process because process killing
+                //is more likely to throw an exception
+                if(InputHandler.javaHelperProcess != null)
+                    InputHandler.javaHelperProcess.Kill();
+            }
+            catch (System.Exception) { }
+            try
+            {
+                ParentWindow.btn_playPause.IsEnabled = false;
+                ParentWindow.btn_Stop.IsEnabled = false;
+            }
+            catch (System.Exception) { }
         }
         // =======================================================
     }

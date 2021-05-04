@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Piano_Player
 {
@@ -42,6 +42,28 @@ namespace Piano_Player
             return input;
         }
         // -------------------------------------------------------
+        public static bool YesNoDialog(string text, string caption)
+        {
+            DialogResult dr = MessageBox.Show(text, caption, MessageBoxButtons.YesNo);
+            return dr == DialogResult.Yes;
+        }
+        // -------------------------------------------------------
+        public static int YesNoCancelDialog(string text, string caption)
+        {
+            DialogResult dr = MessageBox.Show(text, caption, MessageBoxButtons.YesNoCancel);
+
+            switch (dr)
+            {
+                case DialogResult.Yes:
+                    return 1;
+                case DialogResult.No:
+                    return 2;
+                case DialogResult.Cancel:
+                    return 3;
+                default:
+                    return -1;
+            }
+        }
         // =======================================================
         //og. src: https://stackoverflow.com/questions/7162834/determine-if-current-application-is-activated-has-focus
         /// <summary>Returns true if the current application has focus, false otherwise</summary>

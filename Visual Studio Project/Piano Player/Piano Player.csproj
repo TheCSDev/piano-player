@@ -95,6 +95,7 @@
     </ApplicationDefinition>
     <Compile Include="Scripts\IO\PianoPlayerSheetFile.cs" />
     <Compile Include="Scripts\App\Updater.cs" />
+    <Compile Include="Scripts\IO\SaveLoadSystem.cs" />
     <Compile Include="Scripts\Player\Timeline.cs" />
     <Compile Include="Scripts\Player\TimelinePlayer.cs" />
     <Compile Include="Scripts\QM.cs" />

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using Piano_Player.Player;
+using Piano_Player.IO;
 
 namespace Piano_Player
 {
@@ -15,12 +16,14 @@ namespace Piano_Player
     {
         // =======================================================
         public TimelinePlayer PianoPlayer { get; private set; }
+        public SaveLoadSystem SaveLoadSystem { get; private set; }
         // =======================================================
         public MainWindow(string[] Args)
         {
             //initialize components
             InitializeComponent();
             PianoPlayer = new TimelinePlayer(this);
+            SaveLoadSystem = new SaveLoadSystem(this);
 
             //handle events
             PianoPlayer.PlayStateChanged += UpdateUI_btn_PlayPause;
@@ -42,9 +45,20 @@ namespace Piano_Player
             //PianoPlayer.ProgressUpdate += UpdateUI_label_time;
 
             //apply default ui settings to the timeline
-            UpdatePlayerTimeline();
+            SaveLoadSystem.NewFile(false);
         }
         // =======================================================
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!SaveLoadSystem.ChangesSaved)
+            {
+                int r = QM.YesNoCancelDialog
+                        ("Save changes made to the current sheet?", "Piano Player");
+                if (r == 1) SaveLoadSystem.SaveFile();
+                else if (r == 3) e.Cancel = true;
+            }
+        }
+
         private void Window_Closed(object sender, EventArgs e)
         {
             if (PianoPlayer != null) PianoPlayer.AbortPlayer();
@@ -84,6 +98,12 @@ namespace Piano_Player
 
         private void btn_removeSelSheet_Click(object sender, RoutedEventArgs e)
         {
+            if (tabs_sheets.Items.Count == 0) return;
+
+            if(!QM.YesNoDialog("Are you sure you want to remove the selected " +
+                "sheet? This action cannot be undone.", "Piano Player"))
+                return;
+
             Editor_RemoveSelectedSheet();
             e.Handled = true;
         }
@@ -106,6 +126,65 @@ namespace Piano_Player
             PianoPlayer.Pause();
             PianoPlayer.Time = (int)slider_progress.Value;
             e.Handled = true;
+        }
+
+        private void edit_startTimePerNote_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!int.TryParse(edit_startTimePerNote.Text, out _))
+            {
+                edit_startTimePerNote.Text = QM.NumberOnlyString
+                    (edit_startTimePerNote.Text);
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void edit_startTimePerSpace_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!int.TryParse(edit_startTimePerSpace.Text, out _))
+            {
+                edit_startTimePerSpace.Text = QM.NumberOnlyString
+                    (edit_startTimePerSpace.Text);
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void edit_startTimePerBreak_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!int.TryParse(edit_startTimePerBreak.Text, out _))
+            {
+                edit_startTimePerBreak.Text = QM.NumberOnlyString
+                    (edit_startTimePerBreak.Text);
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void menu_file_new_Click(object sender, RoutedEventArgs e)
+        {
+            SaveLoadSystem.NewFile(true);
+        }
+
+        private void menu_file_open_Click(object sender, RoutedEventArgs e)
+        {
+            SaveLoadSystem.OpenFile(true);
+        }
+
+        private void menu_file_save_Click(object sender, RoutedEventArgs e)
+        {
+            SaveLoadSystem.SaveFile();
+        }
+
+        private void menu_file_saveas_Click(object sender, RoutedEventArgs e)
+        {
+            SaveLoadSystem.SaveFileAs();
+        }
+
+        private void menu_file_exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+            Environment.Exit(0);
         }
         // -------------------------------------------------------
         public IO.PianoPlayerSheetFile UIInputToPPSF()
@@ -153,10 +232,12 @@ namespace Piano_Player
             tabItem.Header = "Sheet " + (tabs_sheets.Items.Count + 1);
 
             TextBox edit_sheet = new TextBox();
+            edit_sheet.Text = sheet;
             edit_sheet.Padding = new Thickness(5, 5, 5, 5);
             edit_sheet.AcceptsReturn = true;
             edit_sheet.AcceptsTab = true;
-            edit_sheet.IsUndoEnabled = false;
+            //TODO - ADD UNDO SYSTEM AND SET THIS TO FALSE
+            edit_sheet.IsUndoEnabled = true;
             edit_sheet.FontFamily = new FontFamily("Courier New");
             edit_sheet.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             edit_sheet.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;

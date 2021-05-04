@@ -11,6 +11,7 @@
         Width="600" Height="450"
         MinWidth="450" MinHeight="400"
         
+        Closing="Window_Closing"
         Closed="Window_Closed"
         GotKeyboardFocus="Window_GotKeyboardFocus"
         
@@ -20,11 +21,11 @@
 
         <Menu HorizontalAlignment="Stretch" Height="20" VerticalAlignment="Top" Background="White">
             <MenuItem Header="File">
-                <MenuItem x:Name="menu_file_new" Header="New"/>
-                <MenuItem x:Name="menu_file_open" Header="Open"/>
-                <MenuItem x:Name="menu_file_save" Header="Save"/>
-                <MenuItem x:Name="menu_file_saveas" Header="Save As"/>
-                <MenuItem x:Name="menu_file_exit" Header="Exit"/>
+                <MenuItem x:Name="menu_file_new" Header="New" Click="menu_file_new_Click"/>
+                <MenuItem x:Name="menu_file_open" Header="Open" Click="menu_file_open_Click"/>
+                <MenuItem x:Name="menu_file_save" Header="Save" Click="menu_file_save_Click"/>
+                <MenuItem x:Name="menu_file_saveas" Header="Save As" Click="menu_file_saveas_Click"/>
+                <MenuItem x:Name="menu_file_exit" Header="Exit" Click="menu_file_exit_Click"/>
             </MenuItem>
         </Menu>
 
@@ -79,21 +80,21 @@
                     <TextBox x:Name="edit_startTimePerNote"
                            HorizontalAlignment="Right" VerticalAlignment="Top"
                            Margin="0,35,10,0" Width="180" Height="20"
-                           Text="150"/>
+                           Text="150" TextChanged="edit_startTimePerNote_TextChanged"/>
                     <Label HorizontalAlignment="Right" VerticalAlignment="Top"
                            Margin="0,55,10,0" Width="180" Height="25"
                            Content="Starting time per space:"/>
                     <TextBox x:Name="edit_startTimePerSpace"
                            HorizontalAlignment="Right" VerticalAlignment="Top"
                            Margin="0,80,10,0" Width="180" Height="20"
-                           Text="150"/>
+                           Text="150" TextChanged="edit_startTimePerSpace_TextChanged"/>
                     <Label HorizontalAlignment="Right" VerticalAlignment="Top"
                            Margin="0,100,10,0" Width="180" Height="25"
                            Content="Starting time per break:"/>
                     <TextBox x:Name="edit_startTimePerBreak"
                              HorizontalAlignment="Right" VerticalAlignment="Top"
                              Margin="0,125,10,0" Width="180" Height="20"
-                             Text="400"/>
+                             Text="400" TextChanged="edit_startTimePerBreak_TextChanged"/>
 
                     <TabControl x:Name="tabs_sheets"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"

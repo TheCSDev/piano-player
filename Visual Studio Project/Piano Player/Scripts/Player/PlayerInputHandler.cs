@@ -97,7 +97,8 @@ namespace Piano_Player.Player
         }
         public void KeyUp(VirtualKeyCode keyCode)
         {
-            if (KeysPressedBeforePing >= KeyLimitPerPing) return;
+            //commented to prevent bugs and allow keys to be released
+            //if (KeysPressedBeforePing >= KeyLimitPerPing) return;
 
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyUp(keyCode);
             else
