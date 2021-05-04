@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Collections.Generic;
@@ -38,13 +39,32 @@ namespace Piano_Player
                     {
                         tabs.SelectedItem = tabs.Items[0];
                         ((TabItem)tabs.Items[1]).IsEnabled = false;
+                        slider_progress.IsEnabled = false;
                     }
-                    else ((TabItem)tabs.Items[1]).IsEnabled = true;
+                    else
+                    {
+                        ((TabItem)tabs.Items[1]).IsEnabled = true;
+                        slider_progress.IsEnabled = true;
+                    }
                 });
             };
             PianoPlayer.ProgressUpdate += UpdateUI_slider_progress;
             //commented because label already updates via the event above
             //PianoPlayer.ProgressUpdate += UpdateUI_label_time;
+
+            //let the slider drag when IsMoveToPointEnabled triggers
+            //og. src: https://stackoverflow.com/questions/2909862/slider-does-not-drag-in-combination-with-ismovetopointenabled-behaviour
+            slider_progress.PreviewMouseMove += (sender, args) =>
+            {
+                if (args.LeftButton == MouseButtonState.Pressed)
+                {
+                    slider_progress.RaiseEvent(new MouseButtonEventArgs(args.MouseDevice, args.Timestamp, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                        Source = args.Source
+                    });
+                }
+            };
 
             //apply default ui settings to the timeline
             SaveLoadSystem.NewFile(false);
@@ -52,6 +72,8 @@ namespace Piano_Player
         // =======================================================
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if(PianoPlayer != null) PianoPlayer.Pause();
+
             if (!SaveLoadSystem.ChangesSaved)
             {
                 int r = QM.YesNoCancelDialog
@@ -83,15 +105,16 @@ namespace Piano_Player
         private void btn_Stop_Click(object sender, RoutedEventArgs e)
         {
             PianoPlayer.Stop();
+            slider_progress.Value = 0;
             e.Handled = true;
         }
-
+        // -----------------
         private void tabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!PianoPlayer.Playing) UpdatePlayerTimeline();
             e.Handled = true;
         }
-
+        // -----------------
         private void btn_addSheet_Click(object sender, RoutedEventArgs e)
         {
             Editor_AddSheet("");
@@ -109,27 +132,19 @@ namespace Piano_Player
             Editor_RemoveSelectedSheet();
             e.Handled = true;
         }
-
+        // -----------------
         private void slider_progress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             UpdateUI_label_time();
+            
+            if (!PianoPlayer.Playing)
+                PianoPlayer.Time = (int)slider_progress.Value;
+            else
+                UpdateUI_slider_progress();
+            
             e.Handled = true;
         }
-
-        private void slider_progress_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
-        {
-            PianoPlayer.Pause();
-            PianoPlayer.Time = (int)slider_progress.Value;
-            e.Handled = true;
-        }
-
-        private void slider_progress_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
-        {
-            PianoPlayer.Pause();
-            PianoPlayer.Time = (int)slider_progress.Value;
-            e.Handled = true;
-        }
-
+        // -----------------
         private void edit_startTimePerNote_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!int.TryParse(edit_startTimePerNote.Text, out _))
@@ -165,7 +180,7 @@ namespace Piano_Player
             }
             SaveLoadSystem.ChangesSaved = false;
         }
-
+        // -----------------
         private void menu_file_new_Click(object sender, RoutedEventArgs e)
         {
             SaveLoadSystem.NewFile(true);

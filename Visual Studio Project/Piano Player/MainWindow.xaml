@@ -43,15 +43,12 @@
                                    TextWrapping="Wrap" Text="Coming soon...?"
                                    Foreground="Gray"/>
                     </Grid>
-
-
+                    
                     <Slider x:Name="slider_progress"
                             HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                             Margin="10,0,10,50" Height="20"
                             Minimum="0" Maximum="0" IsMoveToPointEnabled="True"
-                            ValueChanged="slider_progress_ValueChanged"
-                            Thumb.DragDelta="slider_progress_DragDelta"
-                            Thumb.DragCompleted="slider_progress_DragCompleted"/>
+                            ValueChanged="slider_progress_ValueChanged"/>
 
                     <Button x:Name="btn_playPause" Click="btn_playPause_Click"
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"
