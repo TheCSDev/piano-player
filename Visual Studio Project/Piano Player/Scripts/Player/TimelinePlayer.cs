@@ -49,6 +49,9 @@ namespace Piano_Player.Player
         // =======================================================
         public TimelinePlayer(MainWindow parentWindow)
         {
+            Playing         = false;
+            Time            = 0;
+            
             ParentWindow    = parentWindow;
             InputHandler    = new PlayerInputHandler(this);
             PlayerThread = new Thread(() => { PlayerThreadM(this); });
@@ -56,9 +59,6 @@ namespace Piano_Player.Player
             PlayerThread.Start();
 
             //CurrentTimeline = new Timeline();
-            
-            Playing         = false;
-            Time            = 0;
         }
         // =======================================================
         private static void PlayerThreadM(TimelinePlayer player)
@@ -79,7 +79,7 @@ namespace Piano_Player.Player
 
                     if (continuedLastFrame)
                     {
-                        Thread.Sleep(1000);
+                        Thread.Sleep(1500);
                         continuedLastFrame = false;
                     }
 

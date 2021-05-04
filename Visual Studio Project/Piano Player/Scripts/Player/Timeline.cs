@@ -200,10 +200,30 @@ namespace Piano_Player.Player
                 {
                     if (action.Substring(1).StartsWith("w"))
                     {
-                        int i = 0;
-                        try { i = int.Parse(action.Substring(3)); }
-                        catch (Exception) { }
-                        timestamp += i;
+                        int i;
+                        int.TryParse(action.Substring(3), out i);
+                        if (i < 0) i = 0; timestamp += i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("tpn"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(5), out i);
+                        if (i < 0) i = 0; tpn = i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("tps"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(5), out i);
+                        if (i < 0) i = 0; tps = i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("tpb"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(5), out i);
+                        if (i < 0) i = 0; tpb = i;
                         continue;
                     }
                 }

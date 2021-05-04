@@ -37,6 +37,11 @@
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           Margin="10,10,10,80"
                           Background="#dddddd">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Width="200" Height="18"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap" Text="Coming soon...?"
+                                   Foreground="Gray"/>
                     </Grid>
 
 
@@ -63,11 +68,11 @@
                         <Image x:Name="img_btn_Stop" Source="Images/btn_stop.png"/>
                     </Button>
 
-                    <TextBlock x:Name="label_time"
+                    <TextBlock x:Name="label_time" FontFamily="Courier New"
                                HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                               Margin="0,0,10,15" Width="250" Height="18"
+                               Margin="0,0,10,15" Width="300" Height="18"
                                TextAlignment="Right"
-                               Text="0:00 / 0:00"/>
+                               Text="0:0:0.000 / 0:0:0.000"/>
 
                 </Grid>
             </TabItem>

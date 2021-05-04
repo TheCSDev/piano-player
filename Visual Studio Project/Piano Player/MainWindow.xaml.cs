@@ -21,9 +21,11 @@ namespace Piano_Player
         public MainWindow(string[] Args)
         {
             //initialize components
-            InitializeComponent();
             PianoPlayer = new TimelinePlayer(this);
             SaveLoadSystem = new SaveLoadSystem(this);
+            //it is very important to define PianoPlayer and
+            //SaveLoadSystem first
+            InitializeComponent();
 
             //handle events
             PianoPlayer.PlayStateChanged += UpdateUI_btn_PlayPause;
@@ -137,6 +139,7 @@ namespace Piano_Player
                 e.Handled = true;
                 return;
             }
+            SaveLoadSystem.ChangesSaved = false;
         }
 
         private void edit_startTimePerSpace_TextChanged(object sender, TextChangedEventArgs e)
@@ -148,6 +151,7 @@ namespace Piano_Player
                 e.Handled = true;
                 return;
             }
+            SaveLoadSystem.ChangesSaved = false;
         }
 
         private void edit_startTimePerBreak_TextChanged(object sender, TextChangedEventArgs e)
@@ -159,6 +163,7 @@ namespace Piano_Player
                 e.Handled = true;
                 return;
             }
+            SaveLoadSystem.ChangesSaved = false;
         }
 
         private void menu_file_new_Click(object sender, RoutedEventArgs e)
@@ -198,6 +203,10 @@ namespace Piano_Player
                 Sheets = null
             };
 
+            if (ppsf.TimePerNote < 0) ppsf.TimePerNote = 0;
+            if (ppsf.TimePerSpace < 0) ppsf.TimePerSpace = 0;
+            if (ppsf.TimePerBreak < 0) ppsf.TimePerBreak = 0;
+
             List<string> sheets = new List<string>();
             foreach (TabItem sheetTab in tabs_sheets.Items)
             {
@@ -223,7 +232,8 @@ namespace Piano_Player
 
         public void UpdatePlayerTimeline()
         {
-            PianoPlayer.CurrentTimeline = (Timeline)UIInputToPPSF();
+            if(!PianoPlayer.Playing)
+                PianoPlayer.CurrentTimeline = (Timeline)UIInputToPPSF();
         }
         // -------------------------------------------------------
         public void Editor_AddSheet(string sheet)
@@ -241,6 +251,10 @@ namespace Piano_Player
             edit_sheet.FontFamily = new FontFamily("Courier New");
             edit_sheet.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             edit_sheet.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            edit_sheet.TextChanged += (object sender, TextChangedEventArgs e) =>
+            {
+                SaveLoadSystem.ChangesSaved = false;
+            };
             tabItem.Content = edit_sheet;
 
             tabs_sheets.Items.Add(tabItem);
@@ -249,7 +263,10 @@ namespace Piano_Player
 
         public void Editor_RemoveSelectedSheet()
         {
+            if (tabs_sheets.Items.Count == 0) return;
+
             tabs_sheets.Items.Remove(tabs_sheets.SelectedItem);
+            SaveLoadSystem.ChangesSaved = false;
         }
         // -------------------------------------------------------
         public void UpdateUI_btn_PlayPause()
