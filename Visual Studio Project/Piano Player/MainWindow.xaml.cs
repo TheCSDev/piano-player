@@ -37,12 +37,25 @@ namespace Piano_Player
                     else ((TabItem)tabs.Items[1]).IsEnabled = true;
                 });
             };
+            PianoPlayer.ProgressUpdate += UpdateUI_slider_progress;
+            //commented because label already updates via the event above
+            //PianoPlayer.ProgressUpdate += UpdateUI_label_time;
+
+            //apply default ui settings to the timeline
+            UpdatePlayerTimeline();
         }
         // =======================================================
         private void Window_Closed(object sender, EventArgs e)
         {
             if (PianoPlayer != null) PianoPlayer.AbortPlayer();
             Environment.Exit(0);
+        }
+
+        private void Window_GotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+        {
+            UpdateUI_slider_progress();
+            UpdateUI_label_time();
+            e.Handled = true;
         }
         // -------------------------------------------------------
         private void btn_playPause_Click(object sender, RoutedEventArgs e)
@@ -72,6 +85,26 @@ namespace Piano_Player
         private void btn_removeSelSheet_Click(object sender, RoutedEventArgs e)
         {
             Editor_RemoveSelectedSheet();
+            e.Handled = true;
+        }
+
+        private void slider_progress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            UpdateUI_label_time();
+            e.Handled = true;
+        }
+
+        private void slider_progress_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            PianoPlayer.Pause();
+            PianoPlayer.Time = (int)slider_progress.Value;
+            e.Handled = true;
+        }
+
+        private void slider_progress_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            PianoPlayer.Pause();
+            PianoPlayer.Time = (int)slider_progress.Value;
             e.Handled = true;
         }
         // -------------------------------------------------------
@@ -154,6 +187,37 @@ namespace Piano_Player
                                 (new Uri(@"pack://application:,,,/Images/btn_play.png"));
                             break;
                     }
+                });
+        }
+
+        public void UpdateUI_slider_progress()
+        {
+            if (Application.Current != null)
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    slider_progress.Minimum = 0;
+                    slider_progress.Maximum = PianoPlayer.CurrentTimeline.TimeLength;
+                    slider_progress.Value = PianoPlayer.Time;
+                });
+        }
+
+        //og. src: https://stackoverflow.com/questions/9993883/convert-milliseconds-to-human-readable-time-lapse
+        public void UpdateUI_label_time()
+        {
+            if (Application.Current != null)
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    TimeSpan ct = TimeSpan.FromMilliseconds
+                        (QM.ClampInt(PianoPlayer.Time, 0, PianoPlayer.CurrentTimeline.TimeLength));
+                    TimeSpan t  = TimeSpan.FromMilliseconds
+                        (PianoPlayer.CurrentTimeline.TimeLength);
+
+                    label_time.Text =
+                        string.Format("{0:D1}:{1:D1}:{2:D1}.{3:D3}",
+                        ct.Hours, ct.Minutes, ct.Seconds, ct.Milliseconds)
+                        + " / " +
+                        string.Format("{0:D1}:{1:D1}:{2:D1}.{3:D3}",
+                        t.Hours, t.Minutes, t.Seconds, t.Milliseconds);
                 });
         }
         // =======================================================

@@ -2,24 +2,20 @@
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Piano_Player
 {
     public static class QM
     {
         // =======================================================
-        public static bool IsStringANumber(string text)
-        {
-            if (text.Length == 0) return false;
-            foreach (char ch in text) if (!char.IsDigit(ch)) return false;
-            return true;
-        }
-        // -------------------------------------------------------
         public static string NumberOnlyString(string input)
         {
             string result = "";
-            foreach (char ch in input) if (char.IsDigit(ch)) result += ch;
-            if (result.Length == 0) result = "0";
+            foreach (char ch in input)
+                if (char.IsDigit(ch) || (ch == '-' && result.Length == 0))
+                    result += ch;
+            if (result.Replace("-", "").Length == 0) result = "0";
             return result;
         }
         // -------------------------------------------------------
@@ -45,6 +41,7 @@ namespace Piano_Player
             else if (input > max) input = max;
             return input;
         }
+        // -------------------------------------------------------
         // =======================================================
         //og. src: https://stackoverflow.com/questions/7162834/determine-if-current-application-is-activated-has-focus
         /// <summary>Returns true if the current application has focus, false otherwise</summary>

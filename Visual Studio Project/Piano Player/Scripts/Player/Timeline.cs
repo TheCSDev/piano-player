@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Piano_Player.IO;
@@ -8,10 +9,10 @@ namespace Piano_Player.Player
     public class Timeline
     {
         // =======================================================
-        public const string ValidNoteCharacters   = "1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(";
+        public const string ValidNoteCharacters = "1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(";
         //warning: special character order is very important (SHIFT+(1 to 9))
         public const string NumberShiftCharacters = "!@#$%^&*()";
-        
+
         public class Keyframe
         {
             private int _timestamp; //ms
@@ -52,6 +53,16 @@ namespace Piano_Player.Player
         // =======================================================
         private List<Keyframe> Keyframes { get; set; }
         public int KeyframeCount { get { return Keyframes.Count; } }
+        public int TimeLength
+        {
+            get
+            {
+                int t = 0;
+                foreach (Keyframe key in Keyframes)
+                    if (key.Timestamp > t) t = key.Timestamp;
+                return t;
+            }
+        }
         // =======================================================
         public Timeline()
         {
@@ -62,7 +73,15 @@ namespace Piano_Player.Player
         {
             if (key == null) return false;
             Keyframes.Add(key);
+            SortKeyframes();
             return true;
+        }
+
+        public void AddKeyframes(Keyframe[] keys)
+        {
+            Keyframes.AddRange(keys);
+            Keyframes.RemoveAll(i => i == null); //remove null keyframes
+            SortKeyframes();
         }
 
         public bool RemoveKeyframe(int index)
@@ -83,6 +102,11 @@ namespace Piano_Player.Player
         }
 
         public int IndexOfKeyframe(Keyframe key) { return Keyframes.IndexOf(key); }
+
+        public void SortKeyframes()
+        {
+            Keyframes = Keyframes.OrderBy(i => i.Timestamp).ToList();
+        }
         // -------------------------------------------------------
         public void GetPlayerAction
         (int timestamp, out PlayerAction playerAction, out string[] args)
@@ -94,19 +118,19 @@ namespace Piano_Player.Player
 
             Keyframe closestBigger = null;
             string keysToPress = "";
+            int lastKeyTimestamp = -1;
 
             foreach (Keyframe keyframe in Keyframes)
             {
-                if (closestBigger == null && keyframe.Timestamp > timestamp)
-                    closestBigger = keyframe;
+                if (keyframe.Timestamp < lastKeyTimestamp)
+                    throw new Exception("Timeline keyframes must be sorted " +
+                        "before getting player action.");
+                lastKeyTimestamp = keyframe.Timestamp;
 
-                else if (closestBigger != null &&
-                    keyframe.Timestamp < closestBigger.Timestamp &&
-                    keyframe.Timestamp > timestamp)
-                    closestBigger = keyframe;
-
-                if (keyframe.Timestamp == timestamp && ChValid(keyframe.NoteKey))
+                if (keyframe.Timestamp == timestamp)
                     keysToPress += keyframe.NoteKey;
+                else if (keyframe.Timestamp > timestamp)
+                    { closestBigger = keyframe; break; }
             }
 
             if (keysToPress.Length > 0)
@@ -121,7 +145,7 @@ namespace Piano_Player.Player
                 args = new string[] { "" + (closestBigger.Timestamp - timestamp) };
                 return;
             }
-            else if (closestBigger == null)
+            else if (keysToPress.Length == 0 && closestBigger == null)
             {
                 playerAction = PlayerAction.Stop;
                 args = null;
@@ -161,6 +185,10 @@ namespace Piano_Player.Player
         (List<string> instructions, ref Timeline timeline,
         int ppsf_tpn, int ppsf_tps, int ppsf_tpb)
         {
+            //prevent lag by adding all keyframes to this list, and then
+            //adding and sorting those keyframes
+            List<Keyframe> keysToAdd = new List<Keyframe>();
+
             //convert those arrays of instructions into a timeline and keyframes
             int tpn = ppsf_tpn, tps = ppsf_tps, tpb = ppsf_tpb;
             int timestamp = 0;
@@ -191,7 +219,7 @@ namespace Piano_Player.Player
                         {
                             actionContainedNotes = true;
                             Keyframe keyframe = new Keyframe(timestamp, ch);
-                            timeline.AddKeyframe(keyframe);
+                            keysToAdd.Add(keyframe);
                         }
                         else if (ch == ' ' && !actionContainedNotes)
                             timestamp += tps;
@@ -202,6 +230,9 @@ namespace Piano_Player.Player
                     if (actionContainedNotes) timestamp += tpn;
                 }
             }
+
+            //add the keyframes to the timeline
+            timeline.AddKeyframes(keysToAdd.ToArray());
         }
 
         public static List<string> SheetToInstructions(string input_sheet)
@@ -269,9 +300,8 @@ namespace Piano_Player.Player
         {
             string s = "";
             foreach (Keyframe key in Keyframes)
-            {
-                s += key.NoteKey + "," + key.Timestamp + "|";
-            }
+                s += key.NoteKey + "," + key.Timestamp + "&&";
+            if (s.EndsWith("&&")) s = s.Remove(s.Length - 1);
             return s;
         }
         // =======================================================

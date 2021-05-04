@@ -12,9 +12,9 @@
         MinWidth="450" MinHeight="400"
         
         Closed="Window_Closed"
+        GotKeyboardFocus="Window_GotKeyboardFocus"
         
-        WindowStartupLocation="CenterScreen"
-        WindowState="Maximized">
+        WindowStartupLocation="CenterScreen">
 
     <Grid Background="#eeee">
 
@@ -39,9 +39,13 @@
                     </Grid>
 
 
-                    <Slider HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                    <Slider x:Name="slider_progress"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                             Margin="10,0,10,50" Height="20"
-                            Minimum="0" Maximum="100" IsMoveToPointEnabled="True"/>
+                            Minimum="0" Maximum="0" IsMoveToPointEnabled="True"
+                            ValueChanged="slider_progress_ValueChanged"
+                            Thumb.DragDelta="slider_progress_DragDelta"
+                            Thumb.DragCompleted="slider_progress_DragCompleted"/>
 
                     <Button x:Name="btn_playPause" Click="btn_playPause_Click"
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"
@@ -58,8 +62,9 @@
                         <Image x:Name="img_btn_Stop" Source="Images/btn_stop.png"/>
                     </Button>
 
-                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                               Margin="0,0,10,15" Width="100" Height="18"
+                    <TextBlock x:Name="label_time"
+                               HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                               Margin="0,0,10,15" Width="250" Height="18"
                                TextAlignment="Right"
                                Text="0:00 / 0:00"/>
 

@@ -9,22 +9,9 @@ namespace Piano_Player.IO
         public int FileVersion { get; set; }
 
 
-        private int _noteTime = 150, _spaceTime = 150, _breakTime = 400; //ms
-        public int TimePerNote
-        {
-            get { return _noteTime; }
-            set { _noteTime = QM.ClampInt(value, 10, 10000); }
-        }
-        public int TimePerSpace
-        {
-            get { return _spaceTime; }
-            set { _spaceTime = QM.ClampInt(value, 10, 10000); }
-        }
-        public int TimePerBreak
-        {
-            get { return _breakTime; }
-            set { _breakTime = QM.ClampInt(value, 10, 10000); }
-        }
+        public int TimePerNote { get; set; }
+        public int TimePerSpace { get; set; }
+        public int TimePerBreak { get; set; }
 
         public string[] Sheets { get; set; }
         // =======================================================

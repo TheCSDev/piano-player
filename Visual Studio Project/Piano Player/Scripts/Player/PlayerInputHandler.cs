@@ -18,6 +18,9 @@ namespace Piano_Player.Player
 
         //Java helper variables
         public Process javaHelperProcess { get; private set; }
+
+        public int KeysPressedBeforePing { get; private set; }
+        public const int KeyLimitPerPing = 75;
         // ================================================
         public PlayerInputHandler(TimelinePlayer parentPlayer)
         {
@@ -53,6 +56,7 @@ namespace Piano_Player.Player
                     Thread.Sleep(1500);
                     if (javaHelperProcess != null && !javaHelperProcess.HasExited)
                         SendCommandToHelper("ping");
+                    KeysPressedBeforePing = 0;
                 }
             });
             t.IsBackground = true;
@@ -67,30 +71,42 @@ namespace Piano_Player.Player
         // ================================================
         public void KeyPress(VirtualKeyCode keyCode)
         {
+            if (KeysPressedBeforePing >= KeyLimitPerPing) return;
+
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyPress(keyCode);
             else
             {
                 if(keyCode == VirtualKeyCode.LSHIFT) SendCommandToHelper("key-press " + 16);
                 else SendCommandToHelper("key-press " + (int)keyCode);
             }
+
+            KeysPressedBeforePing++;
         }
         public void KeyDown(VirtualKeyCode keyCode)
         {
+            if (KeysPressedBeforePing >= KeyLimitPerPing) return;
+
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyDown(keyCode);
             else
             {
                 if (keyCode == VirtualKeyCode.LSHIFT) SendCommandToHelper("key-down " + 16);
                 else SendCommandToHelper("key-down " + (int)keyCode);
             }
+
+            KeysPressedBeforePing++;
         }
         public void KeyUp(VirtualKeyCode keyCode)
         {
+            if (KeysPressedBeforePing >= KeyLimitPerPing) return;
+
             if (!canUseJavaHelper) inputSimulator.Keyboard.KeyUp(keyCode);
             else
             {
                 if (keyCode == VirtualKeyCode.LSHIFT) SendCommandToHelper("key-up " + 16);
                 else SendCommandToHelper("key-up " + (int)keyCode);
             }
+
+            KeysPressedBeforePing++;
         }
         // ================================================
         public void SendCommandToHelper(string args)
