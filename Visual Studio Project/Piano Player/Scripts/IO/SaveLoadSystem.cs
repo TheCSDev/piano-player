@@ -78,6 +78,7 @@ namespace Piano_Player.IO
                 ParentWindow.UpdatePlayerTimeline();
 
                 ParentWindow.tabs.SelectedItem = ParentWindow.tabs.Items[1];
+                ChangesSaved = true;
                 return true;
             }
             catch (Exception e)
