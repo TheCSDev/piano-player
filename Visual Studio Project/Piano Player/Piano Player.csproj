@@ -177,9 +177,6 @@
     <Resource Include="Images\icon_installer.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Files\PianoPlayer_Updater.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Files\Notes.txt" />
   </ItemGroup>
   <ItemGroup>

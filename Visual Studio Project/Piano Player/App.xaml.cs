@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Reflection;
+using Piano_Player.Update;
 
 namespace Piano_Player
 {
@@ -14,8 +15,6 @@ namespace Piano_Player
         public static Version AppVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version;
         public const int FileVersion = 1;
         public const string FileExtension = "ppsf";
-        
-        public static string[] StartupArgs { get; private set; }
         // -------------------------------------------------------
         //CurrentAppSettings from URL
         public static string JavaHelperPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/PianoPlayerHelper.jar";
@@ -25,7 +24,9 @@ namespace Piano_Player
         {
             //startup setup
             base.OnStartup(e);
-            StartupArgs = e.Args;
+
+            //check for updates
+            PianoPlayerUpdater.CheckForUpdates(true);
 
             //set up window
             MainWindow wnd = new MainWindow(e.Args);
