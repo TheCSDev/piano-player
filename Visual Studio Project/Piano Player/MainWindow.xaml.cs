@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -64,8 +65,13 @@ namespace Piano_Player
                 }
             };
 
-            //apply default ui settings to the timeline
-            SaveLoadSystem.NewFile(false);
+            //load a ppsf file if there's an argument to do it,
+            //or if not, then apply default ui settings to the timeline
+            SaveLoadSystem.ChangesSaved = true;
+            if (Args.Length > 0 && Args[0].EndsWith(App.FileExtension) && File.Exists(Args[0]))
+                SaveLoadSystem.LoadFile(Args[0]);
+            else
+                SaveLoadSystem.NewFile(false);
         }
         // =======================================================
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
