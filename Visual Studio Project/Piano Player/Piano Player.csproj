@@ -94,11 +94,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Scripts\IO\PianoPlayerSheetFile.cs" />
-    <Compile Include="Scripts\App\Updater.cs" />
     <Compile Include="Scripts\IO\SaveLoadSystem.cs" />
     <Compile Include="Scripts\Player\Timeline.cs" />
     <Compile Include="Scripts\Player\TimelinePlayer.cs" />
     <Compile Include="Scripts\QM.cs" />
+    <Compile Include="Scripts\Update\LatestVersionInfo.cs" />
+    <Compile Include="Scripts\Update\PianoPlayerUpdater.cs" />
     <Page Include="ErrorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
