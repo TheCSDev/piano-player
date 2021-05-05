@@ -154,37 +154,58 @@ namespace Piano_Player
         // -----------------
         private void edit_startTimePerNote_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!int.TryParse(edit_startTimePerNote.Text, out _))
+            int i;
+            bool b = int.TryParse(edit_startTimePerNote.Text, out i);
+
+            if (!b || i > 60000)
             {
-                edit_startTimePerNote.Text = QM.NumberOnlyString
-                    (edit_startTimePerNote.Text);
+                if (!b)
+                    edit_startTimePerNote.Text = QM.NumberOnlyString(edit_startTimePerNote.Text);
+                else if (i > 60000)
+                    edit_startTimePerNote.Text = "60000";
+
                 e.Handled = true;
                 return;
             }
+
             SaveLoadSystem.ChangesSaved = false;
         }
 
         private void edit_startTimePerSpace_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!int.TryParse(edit_startTimePerSpace.Text, out _))
+            int i;
+            bool b = int.TryParse(edit_startTimePerSpace.Text, out i);
+
+            if (!b || i > 60000)
             {
-                edit_startTimePerSpace.Text = QM.NumberOnlyString
-                    (edit_startTimePerSpace.Text);
+                if (!b)
+                    edit_startTimePerSpace.Text = QM.NumberOnlyString(edit_startTimePerSpace.Text);
+                else if (i > 60000)
+                    edit_startTimePerSpace.Text = "60000";
+
                 e.Handled = true;
                 return;
             }
+
             SaveLoadSystem.ChangesSaved = false;
         }
 
         private void edit_startTimePerBreak_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!int.TryParse(edit_startTimePerBreak.Text, out _))
+            int i;
+            bool b = int.TryParse(edit_startTimePerBreak.Text, out i);
+
+            if (!b || i > 60000)
             {
-                edit_startTimePerBreak.Text = QM.NumberOnlyString
-                    (edit_startTimePerBreak.Text);
+                if (!b)
+                    edit_startTimePerBreak.Text = QM.NumberOnlyString(edit_startTimePerBreak.Text);
+                else if (i > 60000)
+                    edit_startTimePerBreak.Text = "60000";
+
                 e.Handled = true;
                 return;
             }
+
             SaveLoadSystem.ChangesSaved = false;
         }
         // -----------------
