@@ -21,7 +21,7 @@ rem >>> Wait a little bit before running the update, this will give Piano Player
 timeout 2
 
 rem >>> Let the user know that the updater is running
-msg %username% Piano Player is updating in the background...
+start "" cmd /c "msg %username% Piano Player is updating in the background... & exit"
 
 rem >>> Remove the previous installer if there is one so that a new one can be downloaded
 if exist "%PianoPlayer_SETUP_FILE_NAME%" (
@@ -58,14 +58,14 @@ goto exit_fail
 
 rem >>> Exit and delete this bat script
 :exit
-msg %username% Piano Player has been successfully updated.
+start "" cmd /c "msg %username% Piano Player has been successfully updated. & exit"
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% )
 start /b "" cmd /c del "%~f0"&exit /b
 exit /b 0
 
 rem >>> Exit the script with error code 1, call when update fails
 :exit_fail
-msg %username% Piano Player has failed to update successfully.
+start "" cmd /c "msg %username% Piano Player has failed to update successfully. & exit"
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% /f )
 start "" https://github.com/TheCSDev/piano-player/releases
 start /b "" cmd /c del "%~f0"&exit /b 0
