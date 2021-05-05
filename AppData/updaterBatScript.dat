@@ -34,7 +34,7 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('%PianoPlayer_SETUP
 timeout 1 /nobreak
 
 rem >>> Run the uninstaller after downloading the new version and wait for it to finish
-start /w "" "%PianoPlayer_APP_DIRECTORY%\%PianoPlayer_APP_UNINSTALLER_NAME%"
+start /w "" "%PianoPlayer_APP_DIRECTORY%\%PianoPlayer_APP_UNINSTALLER_NAME%" /SILENT /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 
 rem >>> Check if the app is uninstalling. If not, quit the updater and delete this script.
 if not %errorlevel%==0 ( goto exit_fail )
@@ -47,7 +47,7 @@ goto loop1
 :loop2
 
 rem >>> Execute the downloaded update file
-start "" %PianoPlayer_SETUP_FILE_NAME%
+start "" %PianoPlayer_SETUP_FILE_NAME% /SILENT /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /NOCANCEL /NORESTART /CLOSEAPPLICATIONS /FORCECLOSEAPPLICATIONS /RESTARTAPPLICATIONS
 timeout 2 /nobreak
 
 rem >>> Check if the app is installing. If not, delete the downloaded installer
