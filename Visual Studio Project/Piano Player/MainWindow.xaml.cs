@@ -157,18 +157,27 @@ namespace Piano_Player
             int i;
             bool b = int.TryParse(edit_startTimePerNote.Text, out i);
 
-            if (!b || i > 60000)
+            if (!b)
             {
-                if (!b)
-                    edit_startTimePerNote.Text = QM.NumberOnlyString(edit_startTimePerNote.Text);
-                else if (i > 60000)
-                    edit_startTimePerNote.Text = "60000";
-
+                edit_startTimePerNote.Text =
+                    QM.NumberOnlyString(edit_startTimePerNote.Text);
                 e.Handled = true;
                 return;
             }
-
+            else if (i > 60000)
+            {
+                edit_startTimePerNote.Text = "60000";
+                e.Handled = true;
+                return;
+            }
+            else if (i < 0)
+            {
+                edit_startTimePerNote.Text = Math.Abs(i).ToString();
+                e.Handled = true;
+                return;
+            }
             SaveLoadSystem.ChangesSaved = false;
+            e.Handled = true;
         }
 
         private void edit_startTimePerSpace_TextChanged(object sender, TextChangedEventArgs e)
@@ -176,18 +185,28 @@ namespace Piano_Player
             int i;
             bool b = int.TryParse(edit_startTimePerSpace.Text, out i);
 
-            if (!b || i > 60000)
+            if (!b)
             {
-                if (!b)
-                    edit_startTimePerSpace.Text = QM.NumberOnlyString(edit_startTimePerSpace.Text);
-                else if (i > 60000)
-                    edit_startTimePerSpace.Text = "60000";
-
+                edit_startTimePerSpace.Text =
+                    QM.NumberOnlyString(edit_startTimePerSpace.Text);
+                e.Handled = true;
+                return;
+            }
+            else if (i > 60000)
+            {
+                edit_startTimePerSpace.Text = "60000";
+                e.Handled = true;
+                return;
+            }
+            else if (i < 0)
+            {
+                edit_startTimePerSpace.Text = Math.Abs(i).ToString();
                 e.Handled = true;
                 return;
             }
 
             SaveLoadSystem.ChangesSaved = false;
+            e.Handled = true;
         }
 
         private void edit_startTimePerBreak_TextChanged(object sender, TextChangedEventArgs e)
@@ -195,18 +214,28 @@ namespace Piano_Player
             int i;
             bool b = int.TryParse(edit_startTimePerBreak.Text, out i);
 
-            if (!b || i > 60000)
+            if (!b)
             {
-                if (!b)
-                    edit_startTimePerBreak.Text = QM.NumberOnlyString(edit_startTimePerBreak.Text);
-                else if (i > 60000)
-                    edit_startTimePerBreak.Text = "60000";
-
+                edit_startTimePerBreak.Text =
+                    QM.NumberOnlyString(edit_startTimePerBreak.Text);
+                e.Handled = true;
+                return;
+            }
+            else if (i > 60000)
+            {
+                edit_startTimePerBreak.Text = "60000";
+                e.Handled = true;
+                return;
+            }
+            else if (i < 0)
+            {
+                edit_startTimePerBreak.Text = Math.Abs(i).ToString();
                 e.Handled = true;
                 return;
             }
 
             SaveLoadSystem.ChangesSaved = false;
+            e.Handled = true;
         }
         // -----------------
         private void menu_file_new_Click(object sender, RoutedEventArgs e)

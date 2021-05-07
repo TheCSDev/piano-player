@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Piano_Player"
         mc:Ignorable="d"
         
-        Title="Piano Player v1.3"
+        Title="Piano Player v1.3.1"
         
         Width="600" Height="450"
         MinWidth="450" MinHeight="400"

@@ -6,8 +6,6 @@ namespace Piano_Player.Player
     public class TimelinePlayer
     {
         // =======================================================
-        public const char PlayerCommandPrefix = '_';
-
         public delegate void PlayStateChangedHandler();
         public delegate void ProgressUpdateHandler(); 
         // =======================================================

@@ -9,7 +9,10 @@ namespace Piano_Player.Player
     public class Timeline
     {
         // =======================================================
-        public const string ValidNoteCharacters = "1234567890qwertyuiopasdfghjklzxcvbnm!@$%^*(";
+        public const char PlayerCommandPrefix = '_';
+        // -------------------------------------------------------
+        //warning: character order is very important ((1 to m))
+        public const string NoteCharacters = "1!2@34$5%6^78*9(0qQwWeErtTyYuiIoOpPasSdDfgGhHjJklLzZxcCvVbBnm";
         //warning: special character order is very important (SHIFT+(1 to 9))
         public const string NumberShiftCharacters = "!@#$%^&*()";
 
@@ -155,7 +158,7 @@ namespace Piano_Player.Player
         // -------------------------------------------------------
         public static bool ChValid(char ch)
         {
-            return ValidNoteCharacters.ToLower().Contains
+            return NoteCharacters.ToLower().Contains
                 (char.ToLower(ch).ToString()) && ch != '\0';
         }
         // =======================================================
@@ -196,7 +199,7 @@ namespace Piano_Player.Player
             foreach (string action in instructions)
             {
                 //handling action commands
-                if (action.StartsWith("" + TimelinePlayer.PlayerCommandPrefix))
+                if (action.StartsWith("" + PlayerCommandPrefix))
                 {
                     if (action.Substring(1).StartsWith("w"))
                     {
@@ -260,14 +263,14 @@ namespace Piano_Player.Player
             List<string> FullSheet = new List<string>();
 
             //make sure the command prefix doesnt conflict with the special keys
-            if (ChValid(TimelinePlayer.PlayerCommandPrefix))
+            if (ChValid(PlayerCommandPrefix))
             {
                 ErrorWindow.ShowExceptionWindow(
                     "Invalid player command prefix: \"" +
-                    TimelinePlayer.PlayerCommandPrefix + "\".",
+                    PlayerCommandPrefix + "\".",
                     new Exception(
                         "Player command prefix must not be one " +
-                        "of the following characters:\n\""+ValidNoteCharacters+"\""));
+                        "of the following characters:\n\""+NoteCharacters+"\""));
                 Environment.Exit(0);
             }
 
@@ -290,7 +293,7 @@ namespace Piano_Player.Player
             foreach (char ch in input_sheet)
             {
                 //Skip all characters besides the supported characters
-                if (!char.IsLetterOrDigit(ch) && !("[]| !@$^*(" + TimelinePlayer.PlayerCommandPrefix).Contains("" + ch)) continue;
+                if (!char.IsLetterOrDigit(ch) && !("[]| !@$^*(" + PlayerCommandPrefix).Contains("" + ch)) continue;
 
                 //Move on with the complicated process
                 if (!grouped && next_notes.Length > 0)
