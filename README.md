@@ -16,6 +16,13 @@ As seen above, the sheet contains letters, spaces, and a break (aka '|'). Letter
 
 When writing a sheet, you can also define starting time per note, space, and break (aka tpn, tps, and tpb), they are measured in milliseconds (ms) (1000ms = 1sec). Time per note is the amount of time the player will wait after automatically pressing a key on your keyboard, time per space is the amount of time the player will wait when there is a space between notes, and time per break is the amount of time the player will wait when there is a break (aka '|').
 
+Note groups are groups of notes that will be played at the same time.</br>
+An example of note groups is something like this:</br>
+
+>a b c | \[def\] | g h i</br>
+
+As seen above, the "d", "e", and "f" keys are placed in a note group. To define a group of notes, "\[" and "\]" are used.
+
 # = Old description below, a new one is being written above =
 # Some info about the application
 
