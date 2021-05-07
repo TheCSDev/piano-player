@@ -1,4 +1,4 @@
 {
-    "LatestVersion": {"Major":1,"Minor":3,"Build":0,"Revision":0},
-    "UpdateInstallerURL":"https://github.com/TheCSDev/piano-player/releases/download/1.3/PianoPlayer_Setup.exe"
+    "LatestVersion": {"Major":1,"Minor":3,"Build":1,"Revision":0},
+    "UpdateInstallerURL":"https://github.com/TheCSDev/piano-player/releases/download/v1.3.1/PianoPlayer_Setup.exe"
 }
