@@ -61,7 +61,6 @@ goto exit_fail
 )
 
 echo Piano Player has been successfully updated.
-pause
 
 rem >>> Exit and delete this bat script
 :exit
@@ -73,7 +72,6 @@ exit /b 0
 rem >>> Exit the script with error code 1, call when update fails
 :exit_fail
 echo Piano Player update has failed.
-pause
 timeout 1 /nobreak
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% /f )
 start "" https://github.com/TheCSDev/piano-player/releases
