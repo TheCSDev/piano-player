@@ -18,6 +18,7 @@ if not defined PianoPlayer_SETUP_FILE_URL ( goto exit_fail )
 if not defined PianoPlayer_SETUP_FILE_NAME ( goto exit_fail )
 
 rem >>> Wait a little bit before running the update, this will give Piano Player time to close itself
+echo Piano Player update starting...
 timeout 2
 
 rem >>> Let the user know that the updater is running
@@ -30,10 +31,12 @@ if exist "%PianoPlayer_SETUP_FILE_NAME%" ( goto exit_fail )
 )
 
 rem >>> Execuute Windows Powershell and tell it to download the update file
+echo Downloading update...
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%PianoPlayer_SETUP_FILE_URL%', '%PianoPlayer_SETUP_FILE_NAME%')"
 timeout 1 /nobreak
 
 rem >>> Run the uninstaller after downloading the new version and wait for it to finish
+echo Uninstalling older version...
 start /w "" "%PianoPlayer_APP_DIRECTORY%\%PianoPlayer_APP_UNINSTALLER_NAME%" /SILENT /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 
 rem >>> Check if the app is uninstalling. If not, quit the updater and delete this script.
@@ -47,6 +50,7 @@ goto loop1
 :loop2
 
 rem >>> Execute the downloaded update file
+echo Installing the latest version...
 start "" %PianoPlayer_SETUP_FILE_NAME% /SILENT /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /NOCANCEL /NORESTART /CLOSEAPPLICATIONS /FORCECLOSEAPPLICATIONS /RESTARTAPPLICATIONS
 timeout 2 /nobreak
 
@@ -56,16 +60,21 @@ del %PianoPlayer_SETUP_FILE_NAME% /f
 goto exit_fail
 )
 
+echo Piano Player has been successfully updated.
+pause
+
 rem >>> Exit and delete this bat script
 :exit
-rem start "" msg.exe %username% Piano Player has been successfully updated.
+timeout 1 /nobreak
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% )
 start /b "" cmd /c del "%~f0"&exit /b
 exit /b 0
 
 rem >>> Exit the script with error code 1, call when update fails
 :exit_fail
-rem start "" msg.exe %username% Piano Player has failed to update successfully.
+echo Piano Player update has failed.
+pause
+timeout 1 /nobreak
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% /f )
 start "" https://github.com/TheCSDev/piano-player/releases
 start /b "" cmd /c del "%~f0"&exit /b 0
@@ -73,6 +82,7 @@ exit /b 1
 
 :exit_fail_silent
 rem >>> Silent exit with errorlevel 1
+timeout 1 /nobreak
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% /f )
 start /b "" cmd /c del "%~f0"&exit /b 0
 exit /b 1
