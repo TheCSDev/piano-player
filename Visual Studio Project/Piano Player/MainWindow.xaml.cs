@@ -90,6 +90,8 @@ namespace Piano_Player
         private void Window_Closed(object sender, EventArgs e)
         {
             if (PianoPlayer != null) PianoPlayer.AbortPlayer();
+            App.AppMutex.ReleaseMutex();
+            App.AppMutex.Dispose();
             Environment.Exit(0);
         }
 

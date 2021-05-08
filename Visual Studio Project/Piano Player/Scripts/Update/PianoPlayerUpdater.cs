@@ -31,6 +31,8 @@ namespace Piano_Player.Update
         public static bool CheckForUpdates(bool askToUpdate = false)
         {
             LatestVersionInfo lvi = GetLatestVersionInfo();
+            if (lvi == null) return false;
+
             int v = lvi.LatestVersion.CompareTo(App.AppVersion);
 
             if (v > 0 && askToUpdate)
