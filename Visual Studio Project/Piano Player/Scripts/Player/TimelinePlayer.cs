@@ -115,25 +115,10 @@ namespace Piano_Player.Player
                             Thread.Sleep(400);
                             sleptFor = 400;
                         }
-                        else if (t >= 100)
+                        else if (t <= 399)
                         {
-                            Thread.Sleep(100);
-                            sleptFor = 100;
-                        }
-                        else if (t >= 50)
-                        {
-                            Thread.Sleep(50);
-                            sleptFor = 50;
-                        }
-                        else if (t >= 10)
-                        {
-                            Thread.Sleep(10);
-                            sleptFor = 10;
-                        }
-                        else if (t >= 1)
-                        {
-                            Thread.Sleep(1);
-                            sleptFor = 1;
+                            Thread.Sleep(t);
+                            sleptFor = t;
                         }
                     }
 

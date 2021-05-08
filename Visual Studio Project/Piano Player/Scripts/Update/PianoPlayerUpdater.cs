@@ -65,12 +65,15 @@ namespace Piano_Player.Update
                 batScript.AppendLine(downloaded);
 
                 string batPath = Path.GetTempPath() + "\\TheCSDev_PianoPlayerUpdater.bat";
+                if (File.Exists(batPath)) File.Delete(batPath);
                 File.WriteAllText(batPath, batScript.ToString());
 
                 //og. source: https://stackoverflow.com/questions/38321981/how-to-use-c-sharp-run-batch-file-as-administrator-to-install-windows-services
                 var psi = new ProcessStartInfo();
-                psi.CreateNoWindow = true; //This hides the dos-style black window that the command prompt usually shows
-                psi.UseShellExecute = false; //and this line was added by TheCSDev
+                //i got rid of window hiding to let the user know what is going on
+                //in the background
+                //psi.CreateNoWindow = true; //This hides the dos-style black window that the command prompt usually shows
+                //psi.UseShellExecute = false; //and this line was added by TheCSDev
                 psi.FileName = @"cmd.exe";
                 //no need to run as admin
                 //psi.Verb = "runas"; //This is what actually runs the command as administrator
