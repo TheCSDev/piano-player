@@ -12,7 +12,7 @@ An example of a sheet is something like this:</br>
 
 As seen above, the sheet contains letters, spaces, and a break (aka '|'). Letters represent the piano keys that the player will press, spaces are small breaks that tell the player to wait a little before pressing the next key, and breaks (aka '|') are bigger breaks that will tell the player to wait a little longer before pressing the next keys.
 
-![Screenshot 2021-05-08 001451](https://user-images.githubusercontent.com/66475965/117513631-6e90c700-af92-11eb-80f4-7062713d2127.png)
+![Screenshot 2021-05-09 154137](https://user-images.githubusercontent.com/66475965/117574383-16b2a700-b0dd-11eb-96b8-d93877727756.png)
 
 When writing a sheet, you can also define starting time per note, space, and break (aka tpn, tps, and tpb), they are measured in milliseconds (ms) (1000ms = 1sec). Time per note is the amount of time the player will wait after automatically pressing a key on your keyboard, time per space is the amount of time the player will wait when there is a space between notes, and time per break is the amount of time the player will wait when there is a break (aka '|').
 
@@ -22,6 +22,21 @@ An example of note groups is something like this:</br>
 >a b c | \[def\] | g h i</br>
 
 As seen above, the "d", "e", and "f" keys are placed in a note group. To define a group of notes, "\[" and "\]" are used.
+
+There are more advanced note groups called "player commands" which can be used to make the player do something or to change the player settings mid-way through a sheet.
+
+# Player Commands
+Player commands are used to tell the player to do something at a certain point in time while playing a sheet. Player commands can be used to do things such as making the player wait a certain amount of time before playing the next notes and modifying the player settings (tpn/tps/tpb) mid-way through a sheet.</br>
+Each command starts with a the command prefix. The currently default command prefix for Piano Player is \"_\".</br>
+Commands are defined inside of note groups ("\[" and "\]"). An example of a player command is something like this:
+
+> \[_w 1000\]</br>
+
+The player command above makes the player wait 1000ms (aka 1sec) before playing the next notes.
+
+Below is the list of currently available commands for the latest Piano Player version.</br>
+
+*i will write the list later*
 
 # = Old description below, a new one is being written above =
 # Some info about the application
