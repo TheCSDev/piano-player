@@ -28,7 +28,7 @@ namespace Piano_Player
         // =======================================================
         protected override void OnStartup(StartupEventArgs e)
         {
-            Test.AudioTest();
+            //Test.AudioTest();
 
             //setup a mutex
             if (!AppMutex.WaitOne(TimeSpan.Zero))
