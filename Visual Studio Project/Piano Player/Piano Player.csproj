@@ -94,6 +94,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Scripts\WaveAudio\WaveProcessing\WaveFX.cs" />
     <Compile Include="Scripts\WaveAudio\WaveRIFF.cs" />
     <Compile Include="Scripts\WaveAudio\WaveRIFF_DATA.cs" />
     <Compile Include="Scripts\WaveAudio\WaveRIFF_FMT.cs" />
@@ -188,5 +189,6 @@
     <Resource Include="Images\btn_addSheet.png" />
     <Resource Include="Images\btn_removeSheet.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

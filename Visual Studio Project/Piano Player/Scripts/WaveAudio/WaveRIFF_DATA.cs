@@ -3,9 +3,9 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Piano_Player.WaveAudio
+namespace WaveAudio
 {
-    public class WaveRIFF_DATA
+    public class WaveRIFF_DATA : ICloneable
     {
         // =======================================================
         public string ChunkID { get; } = "data"; //4 BYTES
@@ -13,13 +13,13 @@ namespace Piano_Player.WaveAudio
         {
             get
             {
-                return (uint)AudioData.Length * 2;
+                return (uint)AudioData.Count * 2;
             }
         }
-        public short[] AudioData { get; set; } = new short[] { }; //[Numsamples] BYTES
+        public List<short> AudioData { get; set; } = new List<short>(); //[Numsamples] BYTES
         // =======================================================
         public WaveRIFF_DATA() { }
-        // -------------------------------------------------------
+
         /// <exception cref="Exception"></exception>
         public WaveRIFF_DATA(byte[] dataSubchunk)
         {
@@ -31,7 +31,14 @@ namespace Piano_Player.WaveAudio
                 shorts.Add(BitConverter.ToInt16(b, 0));
             }
 
-            AudioData = shorts.ToArray();
+            AudioData = shorts;
+        }
+        // -------------------------------------------------------
+        public object Clone()
+        {
+            WaveRIFF_DATA result = new WaveRIFF_DATA();
+            result.AudioData = new List<short>((short[])AudioData.ToArray().Clone());
+            return result;
         }
         // =======================================================
         public byte[] GetBytes()
@@ -41,8 +48,8 @@ namespace Piano_Player.WaveAudio
             chunkBytes.AddRange(Encoding.ASCII.GetBytes(ChunkID));
             chunkBytes.AddRange(BitConverter.GetBytes(ChunkSize));
 
-            byte[] bufferBytes = new byte[AudioData.Length * 2];
-            Buffer.BlockCopy(AudioData, 0, bufferBytes, 0, bufferBytes.Length);
+            byte[] bufferBytes = new byte[AudioData.Count * 2];
+            Buffer.BlockCopy(AudioData.ToArray(), 0, bufferBytes, 0, bufferBytes.Length);
             chunkBytes.AddRange(bufferBytes.ToList());
 
             return chunkBytes.ToArray();

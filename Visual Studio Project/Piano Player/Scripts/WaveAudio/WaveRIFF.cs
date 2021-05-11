@@ -8,9 +8,9 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Piano_Player.WaveAudio
+namespace WaveAudio
 {
-    public class WaveRIFF
+    public class WaveRIFF : ICloneable
     {
         // =======================================================
         public string ChunkID { get; } = "RIFF"; //4 BYTES
@@ -24,7 +24,7 @@ namespace Piano_Player.WaveAudio
         public string Format { get; } = "WAVE"; //4 BYTES
         // -------------------------------------------------------
         /// <summary>Duration in seconds</summary>
-        public uint Duration { get { return (uint)(DATA.AudioData.Length / FMT.ByteRate); } }
+        public uint Duration { get { return (uint)(DATA.AudioData.Count / FMT.ByteRate); } }
         // -------------------------------------------------------
         public WaveRIFF_FMT /*Chunk_*/FMT { get; private set; } = new WaveRIFF_FMT();
         public WaveRIFF_DATA /*Chunk_*/DATA { get; private set; } = new WaveRIFF_DATA();
@@ -69,6 +69,14 @@ namespace Piano_Player.WaveAudio
             FMT = new WaveRIFF_FMT(fmt);
             DATA = new WaveRIFF_DATA(data);
         }
+        // -------------------------------------------------------
+        public object Clone()
+        {
+            WaveRIFF result = new WaveRIFF();
+            result.FMT      = (WaveRIFF_FMT)FMT.Clone();
+            result.DATA     = (WaveRIFF_DATA)DATA.Clone();
+            return result;
+        }
         // =======================================================
         public byte[] GetBytes()
         {
@@ -81,6 +89,7 @@ namespace Piano_Player.WaveAudio
             return chunkData.ToArray();
         }
         // =======================================================
+        //returns a byte array with bytes from index [from] to [from + count]
         private static byte[] BFT(byte[] b, int from, int count)
         {
             List<byte> bs = new List<byte>();
@@ -113,7 +122,7 @@ namespace Piano_Player.WaveAudio
         {
             try
             {
-                Console.WriteLine("Looking for: \"" + subchName + "\", Found: \"" + ABTS(BFT(chunk, 0, 4)).ToLower() +  "\" Layer: " + layer);
+                //Console.WriteLine("Looking for: \"" + subchName + "\", Found: \"" + ABTS(BFT(chunk, 0, 4)).ToLower() +  "\" Layer: " + layer);
                 if (subchName.Length != 4) throw new Exception("subchName.Length != 4");
 
                 int chSize = BitConverter.ToInt32(BFT(chunk, 4, 4), 0);

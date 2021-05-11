@@ -2,16 +2,16 @@
 using System.Text;
 using System.Collections.Generic;
 
-namespace Piano_Player.WaveAudio
+namespace WaveAudio
 {
-    public class WaveRIFF_FMT
+    public class WaveRIFF_FMT : ICloneable
     {
         // =======================================================
         public string ChunkID { get; } = "fmt "; //4 BYTES
         public uint   ChunkSize { get { return 16; } } //4 BYTES
         public ushort AudioFormat { get; set; } = 1; //2 BYTES
         public ushort NumChannels { get; set; } = 1; //2 BYTES
-        public uint   SampleRate { get; set; } = 2048; //4 BYTES
+        public uint   SampleRate { get; set; } = 256; //4 BYTES
         public uint   ByteRate //4 BYTES
         {
             get
@@ -30,7 +30,7 @@ namespace Piano_Player.WaveAudio
         public ushort BitsPerSample { get; set; } = 8; //2 BYTES
         // =======================================================
         public WaveRIFF_FMT() { }
-        // -------------------------------------------------------
+
         /// <exception cref="Exception"></exception>
         public WaveRIFF_FMT(byte[] fmtSubchunk)
         {
@@ -38,6 +38,18 @@ namespace Piano_Player.WaveAudio
             NumChannels   = BitConverter.ToUInt16(BFT(fmtSubchunk, 2, 2), 0);
             SampleRate    = BitConverter.ToUInt32(BFT(fmtSubchunk, 4, 4), 0);
             BitsPerSample = BitConverter.ToUInt16(BFT(fmtSubchunk, 14, 2), 0);
+        }
+        // -------------------------------------------------------
+        public object Clone()
+        {
+            WaveRIFF_FMT result = new WaveRIFF_FMT();
+            result.AudioFormat   = AudioFormat;
+            result.NumChannels   = NumChannels;
+            result.SampleRate    = SampleRate;
+            //ByteRate           - read only
+            //BlockAlign         - read only
+            result.BitsPerSample = BitsPerSample;
+            return result;
         }
         // =======================================================
         public byte[] GetBytes()
