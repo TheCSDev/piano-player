@@ -60,6 +60,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Syroot.KnownFolders, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Syroot.Windows.IO.KnownFolders.1.2.3\lib\netstandard2.0\Syroot.KnownFolders.dll</HintPath>
     </Reference>
@@ -93,11 +94,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Scripts\WaveAudio\WaveRIFF.cs" />
+    <Compile Include="Scripts\WaveAudio\WaveRIFF_DATA.cs" />
+    <Compile Include="Scripts\WaveAudio\WaveRIFF_FMT.cs" />
     <Compile Include="Scripts\IO\PianoPlayerSheetFile.cs" />
     <Compile Include="Scripts\IO\SaveLoadSystem.cs" />
     <Compile Include="Scripts\Player\Timeline.cs" />
     <Compile Include="Scripts\Player\TimelinePlayer.cs" />
     <Compile Include="Scripts\QM.cs" />
+    <Compile Include="Scripts\Test.cs" />
     <Compile Include="Scripts\Update\LatestVersionInfo.cs" />
     <Compile Include="Scripts\Update\PianoPlayerUpdater.cs" />
     <Page Include="ErrorWindow.xaml">

@@ -17,8 +17,8 @@ namespace Piano_Player
         public static Version AppVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version;
         //og. src: https://stackoverflow.com/questions/502303/how-do-i-programmatically-get-the-guid-of-an-application-in-net-2-0
         public static string AppGUID { get { return ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0]).Value; } }
-        public const int FileVersion = 1;
-        public const string FileExtension = "ppsf";
+        public const  int    FileVersion = 1;
+        public const  string FileExtension = "ppsf";
         // -------------------------------------------------------
         public static readonly Mutex AppMutex = new Mutex(true, "{" + AppGUID + "}");
         // -------------------------------------------------------
@@ -28,6 +28,8 @@ namespace Piano_Player
         // =======================================================
         protected override void OnStartup(StartupEventArgs e)
         {
+            //Test.AudioTest();
+
             //setup a mutex
             if (!AppMutex.WaitOne(TimeSpan.Zero))
             {
