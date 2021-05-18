@@ -17,8 +17,8 @@ namespace Piano_Player
         public static void AudioTest()
         {
             WaveRIFF wr = new WaveRIFF("C://Users/TheCSDev/Desktop/song.wav");
-            wr = WaveFX.ChangePitch(wr, 40);
-
+            WaveFX.ChangePitchA(ref wr, 100);
+            
             wavData = wr.GetBytes();
             //Console.WriteLine(Encoding.Default.GetString(wavData));
 

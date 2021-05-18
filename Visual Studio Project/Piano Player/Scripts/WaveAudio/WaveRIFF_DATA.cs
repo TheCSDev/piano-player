@@ -8,7 +8,7 @@ namespace WaveAudio
     public class WaveRIFF_DATA : ICloneable
     {
         // =======================================================
-        public string ChunkID { get; } = "data"; //4 BYTES
+        private string ChunkID { get; } = "data"; //4 BYTES
         public uint ChunkSize //4 BYTES
         {
             get
@@ -16,7 +16,13 @@ namespace WaveAudio
                 return (uint)AudioData.Count * 2;
             }
         }
-        public List<short> AudioData { get; set; } = new List<short>(); //[Numsamples] BYTES
+        // -------------------------------------------------------
+        private List<short> _audioData = new List<short>();
+        public List<short> AudioData //[Numsamples] BYTES
+        {
+            get { return _audioData; }
+            set { if (value != null) _audioData = value; }
+        }
         // =======================================================
         public WaveRIFF_DATA() { }
 

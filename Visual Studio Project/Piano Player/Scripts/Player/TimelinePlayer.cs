@@ -1,5 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using WindowsInput.Native;
+using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.Devices;
+using WaveAudio;
+using WaveAudio.WaveProcessing;
 
 namespace Piano_Player.Player
 {
@@ -7,7 +12,7 @@ namespace Piano_Player.Player
     {
         // =======================================================
         public delegate void PlayStateChangedHandler();
-        public delegate void ProgressUpdateHandler(); 
+        public delegate void ProgressUpdateHandler();
         // =======================================================
         public  readonly MainWindow         ParentWindow;
         private readonly PlayerInputHandler InputHandler;
@@ -17,6 +22,8 @@ namespace Piano_Player.Player
         public ProgressUpdateHandler   ProgressUpdate;
         // -------------------------------------------------------
         private Timeline _currentTimeline = new Timeline();
+        private WaveRIFF _noteAudio       = null;
+
         public  Timeline CurrentTimeline
         {
             get { return _currentTimeline; }
@@ -29,6 +36,11 @@ namespace Piano_Player.Player
                     ParentWindow.UpdateUI_label_time();
                 }
             }
+        }
+        public  WaveRIFF NoteAudio
+        {
+            get { return _noteAudio; }
+            set { if (value != null) { _noteAudio = value; } }
         }
         // -------------------------------------------------------
         private bool _playing = false;
@@ -44,12 +56,35 @@ namespace Piano_Player.Player
             }
         }
         public  int  Time { get; set; } //ms
+        public  bool PlayInsideWindow { get; set; } = false;
         // =======================================================
         public TimelinePlayer(MainWindow parentWindow)
         {
             Playing         = false;
             Time            = 0;
-            
+
+            try { _noteAudio = new WaveRIFF(App.AppDirPath + "/note.wav", false); }
+            catch(Exception)
+            {
+                _noteAudio = new WaveRIFF();
+                _noteAudio.FMT.SampleRate = 1500;
+
+                for (double i = 0; i < 100; i++)
+                {
+                    _noteAudio.DATA.AudioData.Add((short)(Math.Sin(i / 100) * 255));
+                }
+
+                for (double i = 0; i < 500; i++)
+                {
+                    _noteAudio.DATA.AudioData.Add(210);
+                }
+
+                for (double i = 0; i < 400; i++)
+                {
+                    _noteAudio.DATA.AudioData.Add((short)(Math.Sin((400 - i) / 400) * 255));
+                }
+            }
+
             ParentWindow    = parentWindow;
             InputHandler    = new PlayerInputHandler(this);
             PlayerThread = new Thread(() => { PlayerThreadM(this); });
@@ -68,7 +103,7 @@ namespace Piano_Player.Player
 
                 while (true)
                 {
-                    if (!player.Playing || QM.ApplicationIsActivated())
+                    if (!player.Playing || (QM.ApplicationIsActivated() && !player.PlayInsideWindow))
                     {
                         Thread.Sleep(500);
                         continuedLastFrame = true;
@@ -97,7 +132,7 @@ namespace Piano_Player.Player
                     if (action == Timeline.PlayerAction.KeyPress)
                     {
                         foreach (char ch in args[0].ToCharArray())
-                            player.KeyPress(ch);
+                            player.KeyPress(ch, QM.ApplicationIsActivated());
                         Thread.Sleep(1);
                     }
 
@@ -135,24 +170,32 @@ namespace Piano_Player.Player
             catch (ThreadAbortException) { player.Playing = false; }
         }
 
-        private void KeyPress(char ch)
+        private void KeyPress(char ch, bool playNoteSoundInstead = false)
         {
-            if (!Timeline.ChValid(ch) || InputHandler.KeysPressedBeforePing
-                >= PlayerInputHandler.KeyLimitPerPing) return;
+            if (!playNoteSoundInstead)
+            {
+                if (!Timeline.ChValid(ch) || InputHandler.KeysPressedBeforePing
+                    >= PlayerInputHandler.KeyLimitPerPing) return;
 
-            if (char.IsLetter(ch))
-            {
-                if (char.IsUpper(ch)) InputHandler.KeyDown(VirtualKeyCode.LSHIFT);
-                InputHandler.KeyPress((VirtualKeyCode)char.ToUpper(ch));
-                if (char.IsUpper(ch)) InputHandler.KeyUp(VirtualKeyCode.LSHIFT);
+                if (char.IsLetter(ch))
+                {
+                    if (char.IsUpper(ch)) InputHandler.KeyDown(VirtualKeyCode.LSHIFT);
+                    InputHandler.KeyPress((VirtualKeyCode)char.ToUpper(ch));
+                    if (char.IsUpper(ch)) InputHandler.KeyUp(VirtualKeyCode.LSHIFT);
+                }
+                else if (Timeline.NumberShiftCharacters.Contains(ch.ToString()))
+                {
+                    InputHandler.KeyDown(VirtualKeyCode.LSHIFT);
+                    //and this is why NumberShiftCharacters character order is important
+                    InputHandler.KeyPress((VirtualKeyCode)
+                        Timeline.NumberShiftCharacters.IndexOf(ch));
+                    InputHandler.KeyUp(VirtualKeyCode.LSHIFT);
+                }
             }
-            else if(Timeline.NumberShiftCharacters.Contains(ch.ToString()))
+            else
             {
-                InputHandler.KeyDown(VirtualKeyCode.LSHIFT);
-                //and this is why NumberShiftCharacters character order is important
-                InputHandler.KeyPress((VirtualKeyCode)
-                    Timeline.NumberShiftCharacters.IndexOf(ch.ToString()));
-                InputHandler.KeyUp(VirtualKeyCode.LSHIFT);
+                NoteAudio.FMT.SampleRate = (uint)(45 * (Timeline.NoteCharacters.IndexOf(ch) + 1));
+                new Audio().Play(NoteAudio, AudioPlayMode.Background);
             }
         }
         // -------------------------------------------------------

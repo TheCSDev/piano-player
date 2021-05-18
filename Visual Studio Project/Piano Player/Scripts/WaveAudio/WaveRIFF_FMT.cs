@@ -7,7 +7,7 @@ namespace WaveAudio
     public class WaveRIFF_FMT : ICloneable
     {
         // =======================================================
-        public string ChunkID { get; } = "fmt "; //4 BYTES
+        private string ChunkID { get; } = "fmt "; //4 BYTES
         public uint   ChunkSize { get { return 16; } } //4 BYTES
         public ushort AudioFormat { get; set; } = 1; //2 BYTES
         public ushort NumChannels { get; set; } = 1; //2 BYTES

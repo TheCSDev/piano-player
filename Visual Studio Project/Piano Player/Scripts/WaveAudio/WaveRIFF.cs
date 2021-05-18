@@ -13,7 +13,7 @@ namespace WaveAudio
     public class WaveRIFF : ICloneable
     {
         // =======================================================
-        public string ChunkID { get; } = "RIFF"; //4 BYTES
+        private string ChunkID { get; } = "RIFF"; //4 BYTES
         public uint ChunkSize //4 BYTES
         {
             get
@@ -21,7 +21,7 @@ namespace WaveAudio
                 return FMT.ChunkSize + DATA.ChunkSize;
             }
         }
-        public string Format { get; } = "WAVE"; //4 BYTES
+        private string Format { get; } = "WAVE"; //4 BYTES
         // -------------------------------------------------------
         /// <summary>Duration in seconds</summary>
         public uint Duration { get { return (uint)(DATA.AudioData.Count / FMT.ByteRate); } }
@@ -34,40 +34,56 @@ namespace WaveAudio
         ///<summary>Also throws exceptions from <seealso cref="File.ReadAllBytes(string)"/></summary>
         ///<exception cref="IOException"></exception>
         ///<exception cref="ArgumentNullException"></exception>
-        public WaveRIFF(string wavPath)
+        public WaveRIFF(string wavPath, bool ignoreExceptions = false)
         {
             if (wavPath == null)
-                throw new ArgumentNullException();
+            {
+                if (!ignoreExceptions) throw new ArgumentNullException();
+                else return;
+            }
 
-            ConstructFromBytes(File.ReadAllBytes(wavPath));
+            ConstructFromBytes(File.ReadAllBytes(wavPath), ignoreExceptions);
         }
 
         /// <exception cref="Exception"></exception>
         /// <exception cref="IndexOutOfRangeException"></exception>
-        public WaveRIFF(byte[] uncompressedWavData)
+        public WaveRIFF(byte[] uncompressedWavData, bool ignoreExceptions = false)
         {
-            ConstructFromBytes(uncompressedWavData);
+            ConstructFromBytes(uncompressedWavData, ignoreExceptions);
         }
 
         /// <exception cref="Exception"></exception>
         /// <exception cref="IndexOutOfRangeException"></exception>
-        private void ConstructFromBytes(byte[] uwd)
+        private void ConstructFromBytes(byte[] uwd, bool ignoreExceptions = false)
         {
-            //try to make sure the bytes are valid
-            if (!ABTS(BFT(uwd, 0, 4)).ToLower().Equals(ChunkID.ToLower()) ||
-                !ABTS(BFT(uwd, 8, 4)).ToLower().Equals(Format.ToLower()))
+            try
+            {
+                //try to make sure the bytes are valid
+                if (!ABTS(BFT(uwd, 0, 4)).ToLower().Equals(ChunkID.ToLower()) ||
+                    !ABTS(BFT(uwd, 8, 4)).ToLower().Equals(Format.ToLower()))
                     throw new Exception("Invalid WAV byte ChunkID or Format.");
 
-            //get chunk data
-            int chSize = BitConverter.ToInt32(BFT(uwd, 4, 4), 0);
-            byte[] chunk = BFT(uwd, 12, chSize);
+                //get chunk data
+                int chSize = BitConverter.ToInt32(BFT(uwd, 4, 4), 0);
+                byte[] chunk = BFT(uwd, 12, chSize);
 
-            byte[] fmt = FindSUBCH(chunk, "fmt ");
-            byte[] data = FindSUBCH(chunk, "data");
+                byte[] fmt = FindSUBCH(chunk, "fmt ");
+                byte[] data = FindSUBCH(chunk, "data");
 
-            //construct FMT and DATA
-            FMT = new WaveRIFF_FMT(fmt);
-            DATA = new WaveRIFF_DATA(data);
+                //construct FMT and DATA
+                FMT = new WaveRIFF_FMT(fmt);
+                DATA = new WaveRIFF_DATA(data);
+            }
+            catch (Exception e)
+            {
+                if (!ignoreExceptions) throw e;
+                else
+                {
+                    FMT = new WaveRIFF_FMT();
+                    DATA = new WaveRIFF_DATA();
+                    return;
+                }
+            }
         }
         // -------------------------------------------------------
         public object Clone()
@@ -132,6 +148,11 @@ namespace WaveAudio
                 else return FindSUBCH(BSUB(chunk, chSize + 8), subchName, layer +1);
             }
             catch (Exception) { return new byte[] { }; }
+        }
+        // =======================================================
+        public static implicit operator byte[](WaveRIFF wave)
+        {
+            return wave.GetBytes();
         }
         // =======================================================
     }

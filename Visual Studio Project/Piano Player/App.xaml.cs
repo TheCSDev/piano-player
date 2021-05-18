@@ -23,12 +23,13 @@ namespace Piano_Player
         public static readonly Mutex AppMutex = new Mutex(true, "{" + AppGUID + "}");
         // -------------------------------------------------------
         //CurrentAppSettings from URL
-        public static string JavaHelperPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/PianoPlayerHelper.jar";
-        public static string UninstallerPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/unins000.exe";
+        public static string AppDirPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string JavaHelperPath { get; } = AppDirPath + "/PianoPlayerHelper.jar";
+        public static string UninstallerPath { get; } = AppDirPath + "/unins000.exe";
         // =======================================================
         protected override void OnStartup(StartupEventArgs e)
         {
-            //Test.AudioTest();
+            Test.AudioTest();
 
             //setup a mutex
             if (!AppMutex.WaitOne(TimeSpan.Zero))
