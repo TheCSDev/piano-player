@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Piano_Player"
         mc:Ignorable="d"
         
-        Title="Piano Player v1.3.3"
+        Title="Piano Player v1.3.4"
         
         Width="600" Height="450"
         MinWidth="450" MinHeight="400"
@@ -38,10 +38,13 @@
                           Margin="10,10,10,80"
                           Background="#dddddd">
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Width="200" Height="18"
+                                   Width="200" Height="36"
                                    TextAlignment="Center"
-                                   TextWrapping="Wrap" Text="Coming soon...?"
-                                   Foreground="Gray"/>
+                                   TextWrapping="Wrap"
+                                   Foreground="Gray">
+                            Coming soon...?<LineBreak/>
+                            eh, don't count on it...
+                        </TextBlock>
                     </Grid>
                     
                     <Slider x:Name="slider_progress"

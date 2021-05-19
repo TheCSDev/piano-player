@@ -108,7 +108,12 @@ namespace Piano_Player.Player
 
         public void SortKeyframes()
         {
-            Keyframes = Keyframes.OrderBy(i => i.Timestamp).ToList();
+            Keyframes = SortKeyframes(Keyframes);
+        }
+
+        public static List<Keyframe> SortKeyframes(List<Keyframe> keyframes)
+        {
+            return keyframes.OrderBy(i => i.Timestamp).ToList();
         }
         // -------------------------------------------------------
         public void GetPlayerAction
@@ -184,80 +189,6 @@ namespace Piano_Player.Player
             return result;
         }
 
-        public static void AddInstructionsToTimeline
-        (List<string> instructions, ref Timeline timeline,
-        int ppsf_tpn, int ppsf_tps, int ppsf_tpb)
-        {
-            //prevent lag by adding all keyframes to this list, and then
-            //adding and sorting those keyframes
-            List<Keyframe> keysToAdd = new List<Keyframe>();
-
-            //convert those arrays of instructions into a timeline and keyframes
-            int tpn = ppsf_tpn, tps = ppsf_tps, tpb = ppsf_tpb;
-            int timestamp = 0;
-
-            foreach (string action in instructions)
-            {
-                //handling action commands
-                if (action.StartsWith("" + PlayerCommandPrefix))
-                {
-                    if (action.Substring(1).StartsWith("w"))
-                    {
-                        int i;
-                        int.TryParse(action.Substring(3), out i);
-                        if (i < 0) i = 0; timestamp += i;
-                        continue;
-                    }
-                    else if (action.Substring(1).StartsWith("tpn"))
-                    {
-                        int i;
-                        int.TryParse(action.Substring(5), out i);
-                        if (i < 0) i = 0; tpn = i;
-                        continue;
-                    }
-                    else if (action.Substring(1).StartsWith("tps"))
-                    {
-                        int i;
-                        int.TryParse(action.Substring(5), out i);
-                        if (i < 0) i = 0; tps = i;
-                        continue;
-                    }
-                    else if (action.Substring(1).StartsWith("tpb"))
-                    {
-                        int i;
-                        int.TryParse(action.Substring(5), out i);
-                        if (i < 0) i = 0; tpb = i;
-                        continue;
-                    }
-                }
-                //handling other actions
-                else
-                {
-                    bool actionContainedNotes = false;
-
-                    //handle each key in action
-                    foreach (char ch in action)
-                    {
-                        if (ChValid(ch))
-                        {
-                            actionContainedNotes = true;
-                            Keyframe keyframe = new Keyframe(timestamp, ch);
-                            keysToAdd.Add(keyframe);
-                        }
-                        else if (ch == ' ' && !actionContainedNotes)
-                            timestamp += tps;
-                        else if (ch == '|' && !actionContainedNotes)
-                            timestamp += tpb;
-                    }
-
-                    if (actionContainedNotes) timestamp += tpn;
-                }
-            }
-
-            //add the keyframes to the timeline
-            timeline.AddKeyframes(keysToAdd.ToArray());
-        }
-
         public static List<string> SheetToInstructions(string input_sheet)
         {
             List<string> FullSheet = new List<string>();
@@ -317,6 +248,88 @@ namespace Piano_Player.Player
 
             //return the instructions
             return FullSheet;
+        }
+
+        public static void AddInstructionsToTimeline
+        (List<string> instructions, ref Timeline timeline,
+        int ppsf_tpn, int ppsf_tps, int ppsf_tpb)
+        {
+            //prevent lag by adding all keyframes to this list, and then
+            //adding and sorting those keyframes
+            List<Keyframe> keysToAdd = new List<Keyframe>();
+
+            //convert those arrays of instructions into a timeline and keyframes
+            int tpn = ppsf_tpn, tps = ppsf_tps, tpb = ppsf_tpb;
+            int timestamp = 0;
+
+            foreach (string action in instructions)
+            {
+                //handling action commands
+                if (action.StartsWith("" + PlayerCommandPrefix))
+                {
+                    if (action.Substring(1).StartsWith("w"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(3), out i);
+                        if (i < 0) i = 0; timestamp += i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("tpn"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(5), out i);
+                        if (i < 0) i = 0; tpn = i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("tps"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(5), out i);
+                        if (i < 0) i = 0; tps = i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("tpb"))
+                    {
+                        int i;
+                        int.TryParse(action.Substring(5), out i);
+                        if (i < 0) i = 0; tpb = i;
+                        continue;
+                    }
+                    else if (action.Substring(1).StartsWith("reverse"))
+                    {
+                        foreach (Keyframe key in keysToAdd)
+                        {
+                            key.Timestamp = Math.Abs(timestamp - key.Timestamp);
+                        }
+                        continue;
+                    }
+                }
+                //handling other actions
+                else
+                {
+                    bool actionContainedNotes = false;
+
+                    //handle each key in action
+                    foreach (char ch in action)
+                    {
+                        if (ChValid(ch))
+                        {
+                            actionContainedNotes = true;
+                            Keyframe keyframe = new Keyframe(timestamp, ch);
+                            keysToAdd.Add(keyframe);
+                        }
+                        else if (ch == ' ' && !actionContainedNotes)
+                            timestamp += tps;
+                        else if (ch == '|' && !actionContainedNotes)
+                            timestamp += tpb;
+                    }
+
+                    if (actionContainedNotes) timestamp += tpn;
+                }
+            }
+
+            //add the keyframes to the timeline
+            timeline.AddKeyframes(keysToAdd.ToArray());
         }
         // =======================================================
         public override string ToString()

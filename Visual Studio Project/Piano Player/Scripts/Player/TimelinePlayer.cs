@@ -56,7 +56,7 @@ namespace Piano_Player.Player
             }
         }
         public  int  Time { get; set; } //ms
-        public  bool PlayInsideWindow { get; set; } = false;
+        public  bool PlayInsideWindow { get; /*set;*/ } = false;
         // =======================================================
         public TimelinePlayer(MainWindow parentWindow)
         {
