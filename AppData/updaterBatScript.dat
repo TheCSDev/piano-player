@@ -17,12 +17,10 @@ if not defined PianoPlayer_APP_UNINSTALLER_NAME ( goto exit_fail )
 if not defined PianoPlayer_SETUP_FILE_URL ( goto exit_fail )
 if not defined PianoPlayer_SETUP_FILE_NAME ( goto exit_fail )
 
-rem >>> Wait a little bit before running the update, this will give Piano Player time to close itself
-echo Piano Player update starting...
-timeout 2 /nobreak > nul
-
 rem >>> Let the user know that the updater is running
-rem start "" msg.exe %username% Piano Player is updating in the background...
+rem >>> and wait a little bit before running the update, this will give Piano Player time to close itself
+echo Piano Player update is starting, please do not close this window.
+timeout 2 /nobreak > nul
 
 rem >>> Remove the previous installer if there is one so that a new one can be downloaded
 if exist "%PianoPlayer_SETUP_FILE_NAME%" (
@@ -36,25 +34,18 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('%PianoPlayer_SETUP
 timeout 2 /nobreak > nul
 
 rem >>> Run the uninstaller after downloading the new version and wait for it to finish
-echo Uninstalling older version...
+echo Uninstalling older version so that the new one can be installed...
+echo Please do not close this window.
 start /w "" "%PianoPlayer_APP_DIRECTORY%\%PianoPlayer_APP_UNINSTALLER_NAME%" /SILENT /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 
-rem >>> Check if the app is uninstalling. If not, quit the updater and delete this script.
+rem >>> Check if the app uninstalled succesfully. If not, quit the updater and delete this script.
 if not %errorlevel%==0 ( goto exit_fail )
-
-rem >>> Wait for the app to finish uninstalling
-:loop1
-if not exist "%PianoPlayer_APP_DIRECTORY%/" ( goto loop2 )
-timeout 1 /nobreak
-goto loop1
-:loop2
 
 rem >>> Execute the downloaded update file
 echo Installing the latest version...
-start "" %PianoPlayer_SETUP_FILE_NAME% /SILENT /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /NOCANCEL /NORESTART /CLOSEAPPLICATIONS /FORCECLOSEAPPLICATIONS /RESTARTAPPLICATIONS
-timeout 2 /nobreak > nul
+start /w "" %PianoPlayer_SETUP_FILE_NAME% /SILENT /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /NOCANCEL /NORESTART /CLOSEAPPLICATIONS /FORCECLOSEAPPLICATIONS /RESTARTAPPLICATIONS
 
-rem >>> Check if the app is installing. If not, delete the downloaded installer
+rem >>> Check if the app installed succesfully. If not, delete the downloaded installer and this script.
 if not %errorlevel%==0 (
 del %PianoPlayer_SETUP_FILE_NAME% /f
 goto exit_fail
@@ -72,7 +63,7 @@ exit /b 0
 rem >>> Exit the script with error code 1, call when update fails
 :exit_fail
 echo Piano Player update has failed.
-timeout 2 /nobreak > nul
+timeout 3 /nobreak > nul
 if exist "%PianoPlayer_SETUP_FILE_NAME%" ( del %PianoPlayer_SETUP_FILE_NAME% /f )
 start "" https://github.com/TheCSDev/piano-player/releases
 start /b "" cmd /c del "%~f0"&exit /b 0
