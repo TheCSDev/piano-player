@@ -31,7 +31,7 @@ namespace MidiAudio.TrackEvents
             result.AddRange(MidiRIFF.UintToVLQ(DeltaTime));
             result.AddRange(BitConverter.GetBytes(EventType));
             result.AddRange(MidiRIFF.UintToVLQ(Length));
-            result.AddRange(MidiRIFF.BitConverterGetListBytes(Data));
+            result.AddRange(Data);
             return result.ToArray();
         }
         // =======================================================

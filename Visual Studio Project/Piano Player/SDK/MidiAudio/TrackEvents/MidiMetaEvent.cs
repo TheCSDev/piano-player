@@ -46,7 +46,7 @@ namespace MidiAudio.TrackEvents
             result.Add(0xFF);
             result.AddRange(BitConverter.GetBytes(EventType));
             result.AddRange(MidiRIFF.UintToVLQ(Length));
-            result.AddRange(MidiRIFF.BitConverterGetListBytes(Data));
+            result.AddRange(Data);
             return result.ToArray();
         }
         // =======================================================
