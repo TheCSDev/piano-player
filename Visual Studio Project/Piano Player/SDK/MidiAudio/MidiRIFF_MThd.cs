@@ -7,13 +7,6 @@ namespace MidiAudio
     public class MidiRIFF_MThd
     {
         // =======================================================
-        public static class FormatTypes
-        {
-            public const ushort SingleTrack   = 0;
-            public const ushort MultipleTrack = 1;
-            public const ushort MixedTracks   = 2;
-        }
-        // =======================================================
         private string ChunkID { get; } = "MThd"; //4 BYTES
         public uint ChunkSize { get; } = 6; //4 BYTES
         // -------------------------------------------------------
@@ -23,7 +16,7 @@ namespace MidiAudio
         // =======================================================
         public MidiRIFF_MThd()
         {
-            Format = FormatTypes.SingleTrack;
+            Format = 0;
             NumTracksToFollow = 1;
             Divison = 60;
         }

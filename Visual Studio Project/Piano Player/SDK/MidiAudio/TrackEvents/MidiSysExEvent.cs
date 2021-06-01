@@ -6,7 +6,7 @@ namespace MidiAudio.TrackEvents
     public class MidiSysExEvent : MidiTrackEvent
     {
         // =======================================================
-        public static class EventTypes
+        public class EventTypes
         {
             public const byte _0F0 = 0xF0;
             public const byte _0F7 = 0XF7;
@@ -31,7 +31,7 @@ namespace MidiAudio.TrackEvents
             result.AddRange(MidiRIFF.UintToVLQ(DeltaTime));
             result.AddRange(BitConverter.GetBytes(EventType));
             result.AddRange(MidiRIFF.UintToVLQ(Length));
-            result.AddRange(Data);
+            result.AddRange(MidiRIFF.BitConverterGetListBytes(Data));
             return result.ToArray();
         }
         // =======================================================
