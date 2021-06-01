@@ -6,7 +6,7 @@ namespace MidiAudio.TrackEvents
     public class MidiControlEvent : MidiTrackEvent
     {
         // =======================================================
-        public class EventTypes
+        public static class EventTypes
         {
             public const byte NoteOff           = 0x8;
             public const byte NoteOn            = 0x9;
@@ -25,9 +25,9 @@ namespace MidiAudio.TrackEvents
         public byte Parameter1 { get; set; } //1 BYTE
         public byte Parameter2 { get; set; } //1 BYTE
         // =======================================================
-        public MidiControlEvent()
+        public MidiControlEvent(byte deltaTime = 0)
         {
-            DeltaTime   = 0;
+            DeltaTime   = deltaTime;
             EventType   = EventTypes.NoteOff;
             MidiChannel = 0;
             Parameter1  = 0;

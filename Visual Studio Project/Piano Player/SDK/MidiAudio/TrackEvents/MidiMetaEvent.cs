@@ -6,7 +6,7 @@ namespace MidiAudio.TrackEvents
     public class MidiMetaEvent : MidiTrackEvent
     {
         // =======================================================
-        public class EventTypes
+        public static class EventTypes
         {
             public const byte SequenceNumber              = 0x00;
             public const byte TextEvent                   = 0x01;
@@ -46,7 +46,7 @@ namespace MidiAudio.TrackEvents
             result.Add(0xFF);
             result.AddRange(BitConverter.GetBytes(EventType));
             result.AddRange(MidiRIFF.UintToVLQ(Length));
-            result.AddRange(MidiRIFF.BitConverterGetListBytes(Data));
+            result.AddRange(Data);
             return result.ToArray();
         }
         // =======================================================
