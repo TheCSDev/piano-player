@@ -51,3 +51,9 @@ Example: \[\_tps 100\]</br>
 Sets the time per break.</br>
 Example: \[\_tpb 300\]</br>
 </br>
+<b>reverse</b></br>
+Reverses all previous notes.</br>
+Command example:</br>
+\- Input: a b c d \[\_reverse\] e f g</br>
+\- Output: d c b a e f g</br>
+</br>
