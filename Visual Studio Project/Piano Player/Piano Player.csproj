@@ -94,10 +94,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Scripts\WaveAudio\WaveProcessing\WaveFX.cs" />
-    <Compile Include="Scripts\WaveAudio\WaveRIFF.cs" />
-    <Compile Include="Scripts\WaveAudio\WaveRIFF_DATA.cs" />
-    <Compile Include="Scripts\WaveAudio\WaveRIFF_FMT.cs" />
+    <Compile Include="SDK\MidiAudio\MidiRIFF.cs" />
+    <Compile Include="SDK\MidiAudio\MidiRIFF_MThd.cs" />
+    <Compile Include="SDK\MidiAudio\MidiRIFF_MTrk.cs" />
+    <Compile Include="SDK\MidiAudio\MidiTrackEvent.cs" />
+    <Compile Include="SDK\MidiAudio\TrackEvents\MidiControlEvent.cs" />
+    <Compile Include="SDK\MidiAudio\TrackEvents\MidiMetaEvent.cs" />
+    <Compile Include="SDK\MidiAudio\TrackEvents\MidiSysExEvent.cs" />
+    <Compile Include="SDK\WaveAudio\WaveProcessing\WaveFX.cs" />
+    <Compile Include="SDK\WaveAudio\WaveRIFF.cs" />
+    <Compile Include="SDK\WaveAudio\WaveRIFF_DATA.cs" />
+    <Compile Include="SDK\WaveAudio\WaveRIFF_FMT.cs" />
     <Compile Include="Scripts\IO\PianoPlayerSheetFile.cs" />
     <Compile Include="Scripts\IO\SaveLoadSystem.cs" />
     <Compile Include="Scripts\Player\Timeline.cs" />
