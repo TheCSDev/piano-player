@@ -71,10 +71,12 @@ namespace MidiAudio
 
             //deal with any remaining bits that didnt fit
             if (currCh.Count > 0)
+            {
                 while (currCh.Count < 7) currCh.Insert(0, false);
-            currCh.Insert(0, result.Count != 0);
-            result.Add(Bits8ToByte(new BitArray(currCh.ToArray())));
-            currCh.Clear();
+                currCh.Insert(0, result.Count != 0);
+                result.Add(Bits8ToByte(new BitArray(currCh.ToArray())));
+                currCh.Clear();
+            }
 
             //return the result
             return result.ToArray();
